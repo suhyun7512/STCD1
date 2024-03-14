@@ -1,0 +1,178 @@
+[debug] [2024-03-05T10:44:20.667Z] ----------------------------------------------------------------------
+[debug] [2024-03-05T10:44:20.669Z] Command:       C:\node.exe C:\Users\ldol0\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js serve
+[debug] [2024-03-05T10:44:20.669Z] CLI Version:   13.4.0
+[debug] [2024-03-05T10:44:20.669Z] Platform:      win32
+[debug] [2024-03-05T10:44:20.669Z] Node Version:  v20.10.0
+[debug] [2024-03-05T10:44:20.670Z] Time:          Tue Mar 05 2024 19:44:20 GMT+0900 (대한민국 표준시)
+[debug] [2024-03-05T10:44:20.670Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-03-05T10:44:20.763Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-03-05T10:44:20.763Z] > authorizing via signed-in user (ldol01224@gmail.com)
+[debug] [2024-03-05T10:44:20.763Z] [iam] checking project html-project-50a56 for permissions ["firebase.projects.get"]
+[debug] [2024-03-05T10:44:20.765Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/html-project-50a56:testIamPermissions [none]
+[debug] [2024-03-05T10:44:20.765Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/html-project-50a56:testIamPermissions x-goog-quota-user=projects/html-project-50a56
+[debug] [2024-03-05T10:44:20.765Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/html-project-50a56:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2024-03-05T10:44:21.574Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/html-project-50a56:testIamPermissions 200
+[debug] [2024-03-05T10:44:21.574Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/html-project-50a56:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2024-03-05T10:44:21.575Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/html-project-50a56 [none]
+[debug] [2024-03-05T10:44:21.958Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/html-project-50a56 200
+[debug] [2024-03-05T10:44:21.958Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/html-project-50a56 {"projectId":"html-project-50a56","projectNumber":"327952448390","displayName":"html-project","name":"projects/html-project-50a56","resources":{"hostingSite":"html-project-50a56","realtimeDatabaseInstance":"html-project-50a56-default-rtdb","storageBucket":"html-project-50a56.appspot.com","locationId":"us-central"},"state":"ACTIVE","etag":"1_23f68000-9148-4bad-a3e9-fa33db302def"}
+[info] 
+[info] === Serving from 'E:\1학년한테 보여줄 사이트\project-1'...
+[info] 
+[debug] [2024-03-05T10:44:21.961Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/html-project-50a56/sites 
+[debug] [2024-03-05T10:44:22.720Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/html-project-50a56/sites 200
+[debug] [2024-03-05T10:44:22.720Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/html-project-50a56/sites {"sites":[{"name":"projects/html-project-50a56/sites/html-project-50a56","defaultUrl":"https://html-project-50a56.web.app","type":"DEFAULT_SITE"}]}
+[debug] [2024-03-05T10:44:22.721Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/html-project-50a56/webApps/-/config [none]
+[debug] [2024-03-05T10:44:25.884Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/html-project-50a56/webApps/-/config 200
+[debug] [2024-03-05T10:44:25.884Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/html-project-50a56/webApps/-/config {"projectId":"html-project-50a56","appId":"1:327952448390:web:4dc6da31402ec9c4d50a07","databaseURL":"https://html-project-50a56-default-rtdb.firebaseio.com","storageBucket":"html-project-50a56.appspot.com","locationId":"us-central","apiKey":"AIzaSyBn6zoF7c7oj9NIhQ9BXHpn5jP6p_GDa6o","authDomain":"html-project-50a56.firebaseapp.com","messagingSenderId":"327952448390","measurementId":"G-RRNB3WY2S9"}
+[debug] [2024-03-05T10:44:25.887Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/html-project-50a56 [none]
+[debug] [2024-03-05T10:44:26.295Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/html-project-50a56 200
+[debug] [2024-03-05T10:44:26.295Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/html-project-50a56 {"projectId":"html-project-50a56","projectNumber":"327952448390","displayName":"html-project","name":"projects/html-project-50a56","resources":{"hostingSite":"html-project-50a56","realtimeDatabaseInstance":"html-project-50a56-default-rtdb","storageBucket":"html-project-50a56.appspot.com","locationId":"us-central"},"state":"ACTIVE","etag":"1_23f68000-9148-4bad-a3e9-fa33db302def"}
+[info] i  hosting[html-project-50a56]: Serving hosting files from: public {"metadata":{"emulator":{"name":"hosting"},"message":"Serving hosting files from: \u001b[1mpublic\u001b[22m"}}
+[info] +  hosting[html-project-50a56]: Local server: http://localhost:5000 {"metadata":{"emulator":{"name":"hosting"},"message":"Local server: \u001b[4m\u001b[1mhttp://localhost:5000\u001b[22m\u001b[24m"}}
+[debug] [2024-03-09T01:12:24.735Z] ----------------------------------------------------------------------
+[debug] [2024-03-09T01:12:24.737Z] Command:       C:\node.exe C:\Users\ldol0\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2024-03-09T01:12:24.737Z] CLI Version:   13.4.0
+[debug] [2024-03-09T01:12:24.737Z] Platform:      win32
+[debug] [2024-03-09T01:12:24.738Z] Node Version:  v20.10.0
+[debug] [2024-03-09T01:12:24.738Z] Time:          Sat Mar 09 2024 10:12:24 GMT+0900 (대한민국 표준시)
+[debug] [2024-03-09T01:12:24.738Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-03-09T01:12:24.807Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-03-09T01:12:24.811Z] > authorizing via signed-in user (ldol01224@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  E:\1학년한테 보여줄 사이트\stcd-project
+
+Before we get started, keep in mind:
+
+  * You are initializing within an existing Firebase project directory
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2024-03-09T01:13:08.218Z] Using project from CLI flag: html-project-50a56
+[debug] [2024-03-09T01:13:08.219Z] > refreshing access token with scopes: []
+[debug] [2024-03-09T01:13:08.220Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2024-03-09T01:13:08.220Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2024-03-09T01:13:08.453Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2024-03-09T01:13:08.454Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2024-03-09T01:13:08.464Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/html-project-50a56 [none]
+[debug] [2024-03-09T01:13:10.352Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/html-project-50a56 200
+[debug] [2024-03-09T01:13:10.352Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/html-project-50a56 {"projectId":"html-project-50a56","projectNumber":"327952448390","displayName":"html-project","name":"projects/html-project-50a56","resources":{"hostingSite":"html-project-50a56","realtimeDatabaseInstance":"html-project-50a56-default-rtdb","storageBucket":"html-project-50a56.appspot.com","locationId":"us-central"},"state":"ACTIVE","etag":"1_23f68000-9148-4bad-a3e9-fa33db302def"}
+[info] i  Using project html-project-50a56 (html-project) 
+[info] 
+=== Database Setup
+[info] i  database: ensuring required API firebasedatabase.googleapis.com is enabled... 
+[debug] [2024-03-09T01:13:10.357Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/html-project-50a56/services/firebasedatabase.googleapis.com [none]
+[debug] [2024-03-09T01:13:10.357Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/html-project-50a56/services/firebasedatabase.googleapis.com x-goog-quota-user=projects/html-project-50a56
+[debug] [2024-03-09T01:13:11.561Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/html-project-50a56/services/firebasedatabase.googleapis.com 200
+[debug] [2024-03-09T01:13:11.561Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/html-project-50a56/services/firebasedatabase.googleapis.com [omitted]
+[info] +  database: required API firebasedatabase.googleapis.com is enabled 
+[info] 
+[debug] [2024-03-09T01:13:11.562Z] >>> [apiv2][query] GET https://firebasedatabase.googleapis.com/v1beta/projects/html-project-50a56/locations/-/instances/html-project-50a56-default-rtdb [none]
+[debug] [2024-03-09T01:13:12.557Z] <<< [apiv2][status] GET https://firebasedatabase.googleapis.com/v1beta/projects/html-project-50a56/locations/-/instances/html-project-50a56-default-rtdb 200
+[debug] [2024-03-09T01:13:12.557Z] <<< [apiv2][body] GET https://firebasedatabase.googleapis.com/v1beta/projects/html-project-50a56/locations/-/instances/html-project-50a56-default-rtdb {"name":"projects/327952448390/locations/us-central1/instances/html-project-50a56-default-rtdb","project":"projects/327952448390","databaseUrl":"https://html-project-50a56-default-rtdb.firebaseio.com","type":"DEFAULT_DATABASE","state":"ACTIVE"}
+[info] 
+[info] Firebase Realtime Database Security Rules allow you to define how your data should be
+[info] structured and when your data can be read from and written to.
+[info] 
+[debug] [2024-03-09T01:13:14.187Z] >>> [apiv2][query] GET https://html-project-50a56-default-rtdb.firebaseio.com/.settings/rules.json [none]
+[debug] [2024-03-09T01:13:14.575Z] <<< [apiv2][status] GET https://html-project-50a56-default-rtdb.firebaseio.com/.settings/rules.json 200
+[debug] [2024-03-09T01:13:14.575Z] <<< [apiv2][body] GET https://html-project-50a56-default-rtdb.firebaseio.com/.settings/rules.json [stream]
+[info] +  Database Rules for html-project-50a56-default-rtdb have been written to database.rules.json. 
+[info] Future modifications to database.rules.json will update Realtime Database Security Rules when you run
+[info] firebase deploy.
+[info] 
+=== Firestore Setup
+[debug] [2024-03-09T01:13:14.611Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/html-project-50a56/services/firestore.googleapis.com [none]
+[debug] [2024-03-09T01:13:14.611Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/html-project-50a56/services/firestore.googleapis.com x-goog-quota-user=projects/html-project-50a56
+[debug] [2024-03-09T01:13:14.982Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/html-project-50a56/services/firestore.googleapis.com 200
+[debug] [2024-03-09T01:13:14.983Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/html-project-50a56/services/firestore.googleapis.com [omitted]
+[debug] [2024-03-09T01:13:14.983Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/html-project-50a56/databases/(default) [none]
+[debug] [2024-03-09T01:13:16.070Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/html-project-50a56/databases/(default) 200
+[debug] [2024-03-09T01:13:16.070Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/html-project-50a56/databases/(default) {"name":"projects/html-project-50a56/databases/(default)","uid":"e481f36c-9219-4e1f-b7a3-b5c5d8f0d25a","createTime":"2024-03-05T10:04:30.555852Z","updateTime":"2024-03-05T10:04:30.555852Z","locationId":"nam5","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2024-03-09T00:13:16.490250Z","appEngineIntegrationMode":"DISABLED","keyPrefix":"s","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","etag":"IOH1jpuA5oQDMOTm8Ir63IQD"}
+[debug] [2024-03-09T01:13:16.070Z] database_type: FIRESTORE_NATIVE
+[debug] [2024-03-09T01:13:16.070Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-03-09T01:13:16.070Z] > authorizing via signed-in user (ldol01224@gmail.com)
+[debug] [2024-03-09T01:13:16.070Z] [iam] checking project html-project-50a56 for permissions ["firebase.projects.get"]
+[debug] [2024-03-09T01:13:16.070Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/html-project-50a56:testIamPermissions [none]
+[debug] [2024-03-09T01:13:16.071Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/html-project-50a56:testIamPermissions x-goog-quota-user=projects/html-project-50a56
+[debug] [2024-03-09T01:13:16.071Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/html-project-50a56:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2024-03-09T01:13:16.837Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/html-project-50a56:testIamPermissions 200
+[debug] [2024-03-09T01:13:16.837Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/html-project-50a56:testIamPermissions {"permissions":["firebase.projects.get"]}
+[info] 
+[info] Firestore Security Rules allow you to define how and when to allow
+[info] requests. You can keep these rules in your project directory
+[info] and publish them with firebase deploy.
+[info] 
+[debug] [2024-03-09T01:13:20.811Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/html-project-50a56/releases pageSize=10&pageToken=
+[debug] [2024-03-09T01:13:22.089Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/html-project-50a56/releases 200
+[debug] [2024-03-09T01:13:22.090Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/html-project-50a56/releases {"releases":[{"name":"projects/html-project-50a56/releases/cloud.firestore","rulesetName":"projects/html-project-50a56/rulesets/c8f65e5f-187f-4067-a4a2-5163593ba218","createTime":"2024-03-05T10:47:04.537433Z","updateTime":"2024-03-05T10:53:27.134886Z"},{"name":"projects/html-project-50a56/releases/firebase.storage/html-project-50a56.appspot.com","rulesetName":"projects/html-project-50a56/rulesets/f46d5fdf-c318-462a-b74b-98ca90909375","createTime":"2024-03-05T10:05:44.158762Z","updateTime":"2024-03-05T10:05:44.158762Z"}]}
+[debug] [2024-03-09T01:13:22.097Z] Found ruleset: projects/html-project-50a56/rulesets/c8f65e5f-187f-4067-a4a2-5163593ba218
+[debug] [2024-03-09T01:13:22.098Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/html-project-50a56/rulesets/c8f65e5f-187f-4067-a4a2-5163593ba218 [none]
+[debug] [2024-03-09T01:13:22.413Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/html-project-50a56/rulesets/c8f65e5f-187f-4067-a4a2-5163593ba218 200
+[debug] [2024-03-09T01:13:22.413Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/html-project-50a56/rulesets/c8f65e5f-187f-4067-a4a2-5163593ba218 [omitted]
+[info] 
+[info] Firestore indexes allow you to perform complex queries while
+[info] maintaining performance that scales with the size of the result
+[info] set. You can keep index definitions in your project directory
+[info] and publish them with firebase deploy.
+[info] 
+[debug] [2024-03-09T01:13:25.362Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/html-project-50a56/databases/(default)/collectionGroups/-/indexes [none]
+[debug] [2024-03-09T01:13:25.363Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/html-project-50a56/databases/(default)/collectionGroups/-/fields?filter=indexConfig.usesAncestorConfig=false OR ttlConfig:* [none]
+[debug] [2024-03-09T01:13:26.461Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/html-project-50a56/databases/(default)/collectionGroups/-/indexes 200
+[debug] [2024-03-09T01:13:26.461Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/html-project-50a56/databases/(default)/collectionGroups/-/indexes {}
+[debug] [2024-03-09T01:13:26.569Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/html-project-50a56/databases/(default)/collectionGroups/-/fields?filter=indexConfig.usesAncestorConfig=false OR ttlConfig:* 200
+[debug] [2024-03-09T01:13:26.570Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/html-project-50a56/databases/(default)/collectionGroups/-/fields?filter=indexConfig.usesAncestorConfig=false OR ttlConfig:* {"fields":[{"name":"projects/html-project-50a56/databases/(default)/collectionGroups/__default__/fields/*","indexConfig":{"indexes":[{"queryScope":"COLLECTION","fields":[{"fieldPath":"*","order":"ASCENDING"}],"state":"READY"},{"queryScope":"COLLECTION","fields":[{"fieldPath":"*","order":"DESCENDING"}],"state":"READY"},{"queryScope":"COLLECTION","fields":[{"fieldPath":"*","arrayConfig":"CONTAINS"}],"state":"READY"}]}}]}
+[info] 
+=== Functions Setup
+[debug] [2024-03-09T01:13:26.618Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-03-09T01:13:26.618Z] > authorizing via signed-in user (ldol01224@gmail.com)
+[debug] [2024-03-09T01:13:26.618Z] [iam] checking project html-project-50a56 for permissions ["firebase.projects.get"]
+[debug] [2024-03-09T01:13:26.618Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/html-project-50a56:testIamPermissions [none]
+[debug] [2024-03-09T01:13:26.618Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/html-project-50a56:testIamPermissions x-goog-quota-user=projects/html-project-50a56
+[debug] [2024-03-09T01:13:26.618Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/html-project-50a56:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2024-03-09T01:13:27.314Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/html-project-50a56:testIamPermissions 200
+[debug] [2024-03-09T01:13:27.314Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/html-project-50a56:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2024-03-09T01:13:27.314Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/html-project-50a56/services/cloudfunctions.googleapis.com [none]
+[debug] [2024-03-09T01:13:27.314Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/html-project-50a56/services/cloudfunctions.googleapis.com x-goog-quota-user=projects/html-project-50a56
+[debug] [2024-03-09T01:13:27.315Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/html-project-50a56/services/runtimeconfig.googleapis.com [none]
+[debug] [2024-03-09T01:13:27.315Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/html-project-50a56/services/runtimeconfig.googleapis.com x-goog-quota-user=projects/html-project-50a56
+[debug] [2024-03-09T01:13:28.440Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/html-project-50a56/services/runtimeconfig.googleapis.com 200
+[debug] [2024-03-09T01:13:28.440Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/html-project-50a56/services/runtimeconfig.googleapis.com [omitted]
+[debug] [2024-03-09T01:13:28.465Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/html-project-50a56/services/cloudfunctions.googleapis.com 200
+[debug] [2024-03-09T01:13:28.465Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/html-project-50a56/services/cloudfunctions.googleapis.com [omitted]
+[debug] [2024-03-09T01:13:28.465Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/html-project-50a56/services/cloudfunctions.googleapis.com:enable [none]
+[debug] [2024-03-09T01:13:28.465Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/html-project-50a56/services/cloudfunctions.googleapis.com:enable x-goog-quota-user=projects/html-project-50a56
+[debug] [2024-03-09T01:13:29.131Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/html-project-50a56/services/cloudfunctions.googleapis.com:enable 200
+[debug] [2024-03-09T01:13:29.131Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/html-project-50a56/services/cloudfunctions.googleapis.com:enable [omitted]
+[debug] [2024-03-09T01:13:39.133Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/html-project-50a56/services/cloudfunctions.googleapis.com [none]
+[debug] [2024-03-09T01:13:39.133Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/html-project-50a56/services/cloudfunctions.googleapis.com x-goog-quota-user=projects/html-project-50a56
+[debug] [2024-03-09T01:13:40.275Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/html-project-50a56/services/cloudfunctions.googleapis.com 200
+[debug] [2024-03-09T01:13:40.276Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/html-project-50a56/services/cloudfunctions.googleapis.com [omitted]
+[info] Let's create a new codebase for your functions.
+[info] A directory corresponding to the codebase will be created in your project
+[info] with sample code pre-configured.
+
+[info] See https://firebase.google.com/docs/functions/organize-functions for
+[info] more information on organizing your functions using codebases.
+
+[info] Functions can be deployed with firebase deploy.
+
+[info] +  Wrote functions/package.json 
+[info] +  Wrote functions/.eslintrc.js 
+[info] +  Wrote functions/index.js 
+[info] +  Wrote functions/.gitignore 

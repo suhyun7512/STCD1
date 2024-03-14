@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STCD-signup</title>
+    <link rel="website icon" type="png" href="../image/stcd_logo_b.png">
+
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/1login.css">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha384-x4V5N5cOv7qr+d7l7goUvYEkM6p3nAgtANrCMEyNPTAqHVvZjdtFOpZ5VX8YBgf4" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha384-GLhlTQ8iKu1r7B\6K9i1Kjp5wsZxlF0Qm1P/l9jaL5q6ELQ6kERn9suBPIFIIU\jN6" crossorigin="anonymous">
+
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+<!-- style="overflow-x:hidden; overflow-y:hidden" -->
+<body style="overflow-x:hidden; overflow-y:hidden">
+    <div class="header">
+        <a href="./home.html"><img src="../image/stcd_logo_b.png" alt="로고"></a>
+    </div>
+    <div class="container">
+        <section id="formHolder">
+            <div class="row">
+                <div class="col-sm-6 brand">
+                    <a href="#" class="logo">by suhyun <span>.</span></a>
+
+                    <div class="heading">
+                        <img src="../image/STCD_logo_w.png" width="250px">
+                        <h3
+                            style="font-size: 48px; font-weight: bold; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">
+                            star code</h3>
+                    </div>
+                </div>
+                <div class="col-sm-6 form">
+                    <div class="signup form-peice">
+                        <form class="signup-form" action="#" method="post">
+                            <h2>회원가입</h2>
+                            <div class="form-group">
+                                <label for="name">이름</label>
+                                <input type="text" name="username" id="name" class="name">
+                                <span class="error"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">이메일</label>
+                                <input type="email" name="emailAdress" id="email" class="email">
+                                <span class="error"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password">비밀번호</label>
+                                <input type="password" name="password" id="password" class="pass">
+                                <span class="error"></span>
+                                <div class="show-password-1" style="cursor: pointer;">
+                                    <img src="../image/no-show.png" alt="Show Password">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="passwordCon">비밀번호 체크</label>
+                                <input type="password" name="passwordCon" id="passwordCon" class="passConfirm">
+                                <span class="error"></span>
+                                <div class="show-password-2" style="cursor: pointer;">
+                                    <img src="../image/no-show.png" alt="Show Password">
+                                </div>
+                            </div>
+
+                            <div class="CTA">
+                                <input type="submit" value="회원가입하기" id="submit" class="signup-btn">
+                                <a href="#" class="switch" onclick="document.title = 'STCD-login'">로그인하기</a>
+                                <a class="switch1" href="#">개인정보 정책</a>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="login form-peice switched">
+                        <form class="login-form" action="#" method="post">
+                            <h2>로그인</h2>
+                            <div class="form-group">
+                                <label for="loginemail" id="loginEmail">이메일</label>
+                                <input type="email" name="loginemail" id="loginEmail1" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password">비밀번호</label>
+                                <input type="password" name="password" id="loginPassword1" class="pass">
+                                <span class="error"></span>
+                                <div class="show-password" style="cursor: pointer;">
+                                    <img src="../image/no-show.png" alt="Show Password">
+                                </div>
+                            </div>
+
+                            <div class="CTA">
+                                <input type="submit" value="로그인하기" class="login-btn">
+                                <a href="#" class="switch" onclick="document.title = 'STCD-signup'">회원가입</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <footer>
+            <p style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">
+                <img src="../image/stcd_logo_b.png" width="20px"> star code by. suhyun
+            </p>
+        </footer>
+
+        <!-- <div style="height:400px; width:400px; background-color:#5a5dff44; position:absolute; border-radius: 50%; top: 75%; right: -150px; z-index: -99;"></div>
+        <div style="height:400px; width:400px; background-color:#ffbb0044; position:absolute; border-radius: 50%; top: 48%; right: -150px; z-index: -99;"></div>
+        <div style="height:400px; width:400px; background-color:#45ff2044; position:absolute; border-radius: 50%; top: 75%; right: 100px; z-index: -99;"></div>  -->
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="../js/1login.js"></script>
+
+    <script>
+
+
+        $(document).ready(function() {
+            $('.show-password').on('click', function () {
+                var passwordField = $('#loginPassword1');
+                var fieldType = passwordField.attr('type');
+
+                passwordField.attr('type', fieldType === 'password' ? 'text' : 'password');
+
+                // 이미지의 src를 클릭할 때마다 변경
+                var eyeIcon = $(this).find('img');
+                eyeIcon.attr('src', fieldType === 'password' ? '../image/show.png' : '../image/no-show.png');
+            });
+
+            $('.show-password-1').on('click', function () {
+                var passwordField1 = $('#password');
+                var fieldType1 = passwordField1.attr('type');
+
+                passwordField1.attr('type', fieldType1 === 'password' ? 'text' : 'password');
+
+                // 이미지의 src를 클릭할 때마다 변경
+                var eyeIcon1 = $(this).find('img');
+                eyeIcon1.attr('src', fieldType1 === 'password' ? '../image/show.png' : '../image/no-show.png');
+            });
+
+            $('.show-password-2').on('click', function () {
+                var passwordField1 = $('#passwordCon');
+                var fieldType1 = passwordField1.attr('type');
+
+                passwordField1.attr('type', fieldType1 === 'password' ? 'text' : 'password');
+
+                // 이미지의 src를 클릭할 때마다 변경
+                var eyeIcon1 = $(this).find('img');
+                eyeIcon1.attr('src', fieldType1 === 'password' ? '../image/show.png' : '../image/no-show.png');
+            });
+        });
+
+    </script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+        import { getFirestore, collection, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+        import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBn6zoF7c7oj9NIhQ9BXHpn5jP6p_GDa6o",
+            authDomain: "html-project-50a56.firebaseapp.com",
+            databaseURL: "https://html-project-50a56-default-rtdb.firebaseio.com",
+            projectId: "html-project-50a56",
+            storageBucket: "html-project-50a56.appspot.com",
+            messagingSenderId: "327952448390",
+            appId: "1:327952448390:web:4dc6da31402ec9c4d50a07",
+            measurementId: "G-RRNB3WY2S9"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const firestore = getFirestore(app);
+        const auth = getAuth(app);
+
+        $(document).ready(() => {
+            $('#togglePassword').on('click', function () {
+                const passwordField = $('#password');
+                const type = passwordField.attr('type') === 'password' ? 'text' : 'password';
+                passwordField.attr('type', type);
+                // 눈 모양 아이콘 변경
+                $(this).toggleClass('fa-eye fa-eye-slash');
+            });
+
+            function validateEmail(email) {
+                const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return regex.test(email);
+            }
+
+            $('.login-btn').on('click', function (event) {
+                event.preventDefault();
+                var 이메일 = $('#loginEmail1').val();
+                var 패스워드 = $('#loginPassword1').val();
+
+                if (!validateEmail(이메일)) {
+                    alert('올바른 이메일 주소를 입력하세요.');
+                    return;
+                }
+
+                signInWithEmailAndPassword(auth, 이메일, 패스워드)
+                    .then((result) => {
+                        console.log(result.user);
+                        alert("로그인에 성공하였습니다.");
+                        window.location.href = "./home.html";
+                    })
+                    .catch((error) => {
+                        alert("로그인에 실패하였습니다.");
+                        console.error("Firebase 에러:", error);
+                        window.location.href = "./system.html";
+                    });
+            });
+
+            $('.signup-btn').on('click', async function (event) {
+                event.preventDefault();
+
+                var email = $('#email').val();
+                var password = $('#password').val();
+                var name = $('#name').val();
+
+                var profilePictureNumber = Math.floor(Math.random() * 5) + 1;
+
+                try {
+                    const result = await createUserWithEmailAndPassword(auth, email, password);
+
+                    var userinfo = { name: name, email: email, uid: result.user.uid, role: "일반인", profilePicture: profilePictureNumber };
+                    await setDoc(doc(collection(firestore, 'user'), result.user.uid), userinfo);
+
+                    alert("회원가입에 성공하셨습니다.");
+
+                    updateProfile(result.user, { displayName: name });
+                    window.location.href = "./system.html";
+                } catch (error) {
+                    console.log('error', error);
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+
+                    if (errorCode === "auth/weak-password") {
+                        alert("비밀번호는 6자리 이상이어야 합니다.");
+                    } else if (errorCode === "auth/email-already-in-use") {
+                        alert("이미 사용 중인 이메일입니다.");
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

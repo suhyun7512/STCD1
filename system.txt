@@ -1,0 +1,58 @@
+npm install -g firebase-tools
+
+firebase login
+
+firebase init
+
+firebase serve
+
+        <!-- <div class="search-box">
+            <input type="text" class="search-txt" name="" placeholder="Type to search">
+            <a class="search-btn" href="#">
+                <i class="fas fa-search"></i>
+            </a>
+        </div> -->
+
+
+        
+
+<div style="height: 1000px; width: 220px;"></div>
+    
+    <div style="height: 1000px; width: 250px; float: right; position: absolute; top: 0; right: 0;"></div>
+
+    <div class="chatting" style="overflow-y: scroll; display: flex; align-items: end; justify-content: right; border-left: 1px solid #999; height: 100vh; width: 250px; position: fixed; right: 0; top: 0;"></div>
+
+
+
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBn6zoF7c7oj9NIhQ9BXHpn5jP6p_GDa6o",
+            authDomain: "html-project-50a56.firebaseapp.com",
+            databaseURL: "https://html-project-50a56-default-rtdb.firebaseio.com",
+            projectId: "html-project-50a56",
+            storageBucket: "html-project-50a56.appspot.com",
+            messagingSenderId: "327952448390",
+            appId: "1:327952448390:web:4dc6da31402ec9c4d50a07",
+            measurementId: "G-RRNB3WY2S9"
+        };
+
+
+        hash_config {
+            algorithm: SCRYPT,
+            base64_signer_key: 9FVKayq9l0GFxA14TRLyf4k3kzxTWA0OnElsVk1DtehYLw9/vzAZ9KRdaYIbll59dZZ8m3phJ2keRwgsdxA5kQ==,
+            base64_salt_separator: Bw==,
+            rounds: 8,
+            mem_cost: 14,
+        }
+
+
+
+
+
+
+
+
+
+
+
+         

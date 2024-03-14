@@ -1,0 +1,18 @@
+*{
+    margin: 0;
+    padding: 0;
+
+    -webkit-touch-callout: none;
+    user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+}
+
+a{
+    text-decoration: none;
+}
+
+li{
+    list-style-type: none;
+}
