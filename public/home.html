@@ -164,13 +164,13 @@
             <div id="profile-div">
                 <img id="profile-modal-image" alt="Profile Image">
                 <p id="profile-name"></p>
-                <p id="profile-email"></p>
-                <p id="profile-role"></p>
+                <p id="profile-aboutMe"></p>
                 <p id="profile-followers"></p>
                 <p id="profile-following"></p>
 
                 <button id="changeNameButton">프로필 이름 변경</button>
                 <button id="changeProfileImageButton">프로필 사진 변경</button>
+                <button id="changeabotmeButton">자기소개 변경</button>
                 <button id="changePasswordButton">비밀번호 변경</button>
                 <input type="password" id="newPasswordInput" placeholder="New Password">
             </div>
@@ -247,8 +247,6 @@
             const profileModal = document.getElementById('profileModal');
             const closeProfileModal = document.getElementById('closeProfileModal');
             const profileNameElement = document.getElementById('profile-name');
-            const profileEmailElement = document.getElementById('profile-email');
-            const profileroleElement = document.getElementById('profile-role');
             const profileImageElement = document.getElementById('profile-modal-image');
             const profileFollowersElement = document.getElementById('profile-followers');
             const profileFollowingElement = document.getElementById('profile-following');
@@ -265,7 +263,6 @@
                         const userData = userDoc.data();
 
                         const userName = userDoc.data().name;
-                        const userrole = userDoc.data().role;
 
                         const profileNumber = userData.profilePicture;
 
@@ -274,13 +271,13 @@
                         const downloadURL = await getDownloadURL(profileImageRef);
 
                         profileNameElement.textContent = '이름: ' + (userData.displayName || userName);
-                        profileEmailElement.textContent = '이메일: ' + user.email;
-                        if (userData.userRole === '관리자') {
-                            profileroleElement.textContent = '직업: ' + userrole;
-                        } else {
-                            profileroleElement.textContent = '직업: ' + userrole;
-                        }
                         profileImageElement.src = downloadURL || 'path/to/default/profile/image.jpg';
+
+                        const profileaboutMeElement = document.getElementById('profile-aboutMe');
+                        const userAboutMe = userDoc.data().aboutme;
+                        profileaboutMeElement.textContent = '자기소개: ' + (userAboutMe || '');
+
+
 
                         const followersSnapshot = await db1.collection('user').where('followuser', 'array-contains', user.uid).get();
                         profileFollowersElement.textContent = `팔로워: ${userData.followuser || 0}`;
@@ -320,6 +317,37 @@
                                 console.error('이름은 6글자이어야 합니다.');
                             }
                         });
+
+                        document.getElementById('changeabotmeButton').addEventListener('click', async function () {
+                            let aboutme = prompt('자기소개를 입력해주세요.');
+
+                            if (aboutme && aboutme.length >= 2) {
+                                const user = auth.currentUser;
+
+                                if (user) {
+                                    try {
+                                        const userDoc = await db1.collection('user').doc(user.uid).get();
+
+                                        if (userDoc.exists) {
+                                            await db1.collection('user').doc(user.uid).update({
+                                                aboutme: aboutme
+                                            });
+
+                                            window.location.href = "./home.html";
+                                        } else {
+                                            console.error('자기소개 데이터를 찾을 수 없습니다.');
+                                        }
+                                    } catch (error) {
+                                        console.error('자기소개 업데이트 중 오류가 발생했습니다:', error);
+                                    }
+                                } else {
+                                    console.error('사용자가 로그인되어 있지 않습니다.');
+                                }
+                            } else {
+                                console.error('자기소개는 2글자이어야 합니다.');
+                            }
+                        });
+
                         document.getElementById('changeProfileImageButton').addEventListener('click', function () {
                             const fileInput = document.createElement('input');
                             fileInput.type = 'file';
