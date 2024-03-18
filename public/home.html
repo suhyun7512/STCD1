@@ -23,7 +23,7 @@
         <div class="loading-circle"></div>
         <p class="loading-text">로딩 중...</p>
     </div>
-    
+
 
     <div id="home-header">
         <a href="./home.html">
@@ -138,7 +138,7 @@
         <div class="modal-content" id="myModal-div">
             <span class="close" onclick="closeModal()">&times;</span>
             <button class="Post-Settings basic" onclick="editPost()">수정하기</button>
-            <button class="Post-Settings red" onclick="deletePost()">삭제하기</button>
+            <button class="Post-Settings red" id="deletePost">삭제하기</button>
             <button class="Post-Settings red" onclick="reportPost()">신고하기</button>
             <!-- <button class="Post-Settings basic" onclick="closeModal()">취소</button> -->
         </div>
@@ -146,10 +146,16 @@
 
     <!-- 댓글 모달창 -->
     <div id="commentModal7" class="modal">
-        <div id="commentContainer7"></div>
+        <div class="modal-content">
+            <div id="commentContainer7"></div>
+            <div id="commentForm">
+                <span class="close" id="closeCommentModal">&times;</span>
+                <input type="text" id="commentInput" placeholder="댓글 달기...">
+                <button id="submitComment">게시</button>
+            </div>
+        </div>
     </div>
 
-    <!-- 프로필 모달 -->
     <div id="profileModal" class="modal">
         <div class="modal-content">
             <span class="close" id="closeProfileModal">&times;</span>
@@ -160,22 +166,16 @@
                 <p id="profile-name"></p>
                 <p id="profile-email"></p>
                 <p id="profile-role"></p>
+                <p id="profile-followers"></p>
+                <p id="profile-following"></p>
 
-                <!-- 프로필 이름 변경 버튼 -->
                 <button id="changeNameButton">프로필 이름 변경</button>
-
-                <!-- 프로필 사진 변경 버튼 -->
                 <button id="changeProfileImageButton">프로필 사진 변경</button>
-
-                <!-- 비밀번호 변경 버튼 -->
                 <button id="changePasswordButton">비밀번호 변경</button>
                 <input type="password" id="newPasswordInput" placeholder="New Password">
-
             </div>
         </div>
     </div>
-
-
 
 
 
@@ -198,34 +198,25 @@
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
 
-    <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
 
     <script type="module" src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js"></script>
+
+    <script src="../js/system.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
         import { getStorage, ref, getDownloadURL, uploadBytes } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js";
-        import { getFirestore, doc, getDoc, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+        import { getFirestore, getDoc, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
         import { getDocs } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
-
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBn6zoF7c7oj9NIhQ9BXHpn5jP6p_GDa6o",
-            authDomain: "html-project-50a56.firebaseapp.com",
-            databaseURL: "https://html-project-50a56-default-rtdb.firebaseio.com",
-            projectId: "html-project-50a56",
-            storageBucket: "html-project-50a56.appspot.com",
-            messagingSenderId: "327952448390",
-            appId: "1:327952448390:web:4dc6da31402ec9c4d50a07",
-            measurementId: "G-RRNB3WY2S9"
-        };
+        import { doc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
         firebase.initializeApp(firebaseConfig);
 
@@ -240,6 +231,8 @@
 
         export { auth, storage, db };
 
+        const firebaseApp = initializeApp(firebaseConfig);
+        const firestoreInstance = getFirestore(firebaseApp);
 
         const postCollection = collection(db, 'posts');
         const postQuery = query(postCollection, orderBy('timestamp', 'desc'));
@@ -257,6 +250,8 @@
             const profileEmailElement = document.getElementById('profile-email');
             const profileroleElement = document.getElementById('profile-role');
             const profileImageElement = document.getElementById('profile-modal-image');
+            const profileFollowersElement = document.getElementById('profile-followers');
+            const profileFollowingElement = document.getElementById('profile-following');
 
             profileButton.addEventListener('click', async function () {
                 const user = auth.currentUser;
@@ -287,27 +282,28 @@
                         }
                         profileImageElement.src = downloadURL || 'path/to/default/profile/image.jpg';
 
+                        const followersSnapshot = await db1.collection('user').where('followuser', 'array-contains', user.uid).get();
+                        profileFollowersElement.textContent = `팔로워: ${userData.followuser || 0}`;
+
+                        const followingSnapshot = await db1.collection('user').where('likeuser', 'array-contains', user.uid).get();
+                        profileFollowingElement.textContent = '팔로잉: ' + followingSnapshot.size;
+
+                        profileModal.style.display = 'block';
+
                         document.getElementById('changeNameButton').addEventListener('click', async function () {
-                            // 새로운 이름 받기
                             let newName = prompt('새로운 이름을 입력하세요.');
 
-                            // 이름이 6글자인지 체크
                             if (newName && newName.length >= 6) {
-                                // Firebase에 현재 로그인 중인 사용자의 UID 가져오기
                                 const user = auth.currentUser;
 
                                 if (user) {
                                     try {
-                                        // Firestore에서 사용자 문서 가져오기
                                         const userDoc = await db1.collection('user').doc(user.uid).get();
 
                                         if (userDoc.exists) {
-                                            // 현재 사용자의 이름 업데이트
                                             await db1.collection('user').doc(user.uid).update({
                                                 name: newName
                                             });
-
-                                            // UI에서 새로운 이름 표시
                                             profileNameElement.textContent = '이름: ' + newName;
 
                                             window.location.href = "./home.html";
@@ -324,13 +320,7 @@
                                 console.error('이름은 6글자이어야 합니다.');
                             }
                         });
-
-
-                        // 프로필 사진 변경 버튼 클릭 시
                         document.getElementById('changeProfileImageButton').addEventListener('click', function () {
-                            // TODO: 프로필 사진 변경 모달 열기 및 기능 구현
-
-                            // 파일 선택 모달 열기
                             const fileInput = document.createElement('input');
                             fileInput.type = 'file';
                             fileInput.accept = 'image/png';
@@ -340,20 +330,16 @@
 
                                 if (selectedFile && selectedFile.type === 'image/png') {
                                     try {
-                                        // Firebase Storage에 파일 업로드
                                         const storageRef = ref(storage, 'profile_images/' + auth.currentUser.uid + '.png');
                                         const uploadTask = uploadBytes(storageRef, selectedFile);
 
-                                        // 업로드 완료 시
                                         uploadTask.then(async (snapshot) => {
                                             console.log('프로필 사진 업로드 완료');
 
-                                            // 다운로드 URL 얻기
                                             const downloadURL = await getDownloadURL(snapshot.ref);
 
-                                            // Firestore의 user 문서 업데이트
                                             await db1.collection('user').doc(auth.currentUser.uid).update({
-                                                profilePicture: auth.currentUser.uid // 파일명으로 업데이트
+                                                profilePicture: auth.currentUser.uid
                                             });
 
                                             window.location.href = "./home.html";
@@ -368,7 +354,7 @@
                                 }
                             });
 
-                            fileInput.click(); // 파일 선택 모달 열기
+                            fileInput.click();
                         });
 
 
@@ -393,69 +379,215 @@
 
         });
 
+        document.getElementById('closeCommentModal').addEventListener('click', function () {
+            const commentModal = document.getElementById('commentModal7');
+            commentModal.style.display = 'none';
+        });
 
 
 
 
 
+
+
+
+
+        async function updateCommentList(postId) {
+            const comments = await getComments(postId);
+            const commentContainer = document.getElementById('commentContainer7');
+
+            commentContainer.innerHTML = '';
+
+            // 댓글을 최신순으로 정렬
+            comments.sort((a, b) => b.timestamp - a.timestamp);
+
+            comments.forEach(comment => {
+                const commentDiv = document.createElement('div');
+
+                const imgDiv = document.createElement('div');
+                imgDiv.id = 'commant_img';
+
+                const imagePath = `https://firebasestorage.googleapis.com/v0/b/html-project-50a56.appspot.com/o/profile_images%2F${comment.profilePicture}.png?alt=media&token=03f5c3e7-bc14-4556-a851-0a7e5bb8bc25`;
+
+                const profileImage = document.createElement('img');
+                profileImage.src = imagePath;
+                profileImage.alt = 'Profile Picture';
+                imgDiv.appendChild(profileImage);
+
+                commentDiv.appendChild(imgDiv);
+
+                const contentDiv = document.createElement('div');
+                contentDiv.id = 'content_div';
+
+                const nameP = document.createElement('p');
+                nameP.textContent = comment.name;
+                nameP.id = 'name_commant';
+
+                contentDiv.appendChild(nameP);
+
+                const contentP = document.createElement('p');
+                contentP.textContent = comment.content;
+                contentP.id = 'content_commant';
+
+                contentDiv.appendChild(contentP);
+
+                commentDiv.appendChild(contentDiv);
+
+                commentContainer.appendChild(commentDiv);
+            });
+        }
 
         async function openCommentModal(postId) {
-            console.log("test");
-            const modalId = `commentModal${postId}`;
-            const modal = document.getElementById(modalId);
-            const commentContainer = document.getElementById(`commentContainer${postId}`);
+            try {
+                const commentModal = document.getElementById('commentModal7');
+                const commentContainer = document.getElementById('commentContainer7');
 
-            // 요소가 존재하는지 확인
-            if (modal && commentContainer) {
-                // 모달창을 보이게 함
-                modal.style.display = "block";
+                // postId로 데이터를 찾기 위해 필요한 코드 추가
+                const postDocRef = doc(db, 'posts', postId);
+                const postDocSnap = await getDoc(postDocRef);
+                if (postDocSnap.exists()) {
+                    const postData = postDocSnap.data();
+                    // postId로 데이터를 찾아서 이미지 URL, 제목, 작성자 등을 가져옴
+                    const imageUrl = postData.imageUrl;
+                    const title = postData.title;
+                    const userName = postData.userName;
+                    const content = postData.content;
 
-                // 댓글 데이터를 로드하고 모달창에 표시
-                const comments = await loadComments(postId);
-                comments.forEach(comment => {
-                    if (comment.name === "content") {
-                        const commentElement = document.createElement('div');
-                        commentElement.textContent = `${comment.name}: ${comment.content}`;
-                        commentContainer.appendChild(commentElement);
-                    }
-                });
-            } else {
-                console.error('모달창 또는 댓글 컨테이너를 찾을 수 없습니다.');
+                    // 모달창에 데이터를 표시
+                    // 이미지
+                    const imgDiv = document.createElement('div');
+                    imgDiv.id = 'post_img';
+
+                    const image = document.createElement('img');
+                    image.src = imageUrl;
+                    imgDiv.appendChild(image);
+
+                    // 제목, 작성자, 내용
+                    const postContentDiv = document.createElement('div');
+                    postContentDiv.id = 'post_content';
+
+                    const titleP = document.createElement('p');
+                    titleP.textContent = title;
+                    titleP.id = 'title_comment';
+
+                    const userNameP = document.createElement('p');
+                    userNameP.textContent = userName;
+                    userNameP.id = 'user_comment';
+
+                    const contentP = document.createElement('p');
+                    contentP.textContent = content;
+                    contentP.id = 'content_comment';
+
+                    postContentDiv.appendChild(titleP);
+                    postContentDiv.appendChild(userNameP);
+                    postContentDiv.appendChild(contentP);
+
+                    // 댓글 입력 폼 및 버튼
+                    const commentForm = document.createElement('div');
+                    commentForm.id = 'commentForm';
+                    const commentInput = document.createElement('input');
+                    commentInput.type = 'text';
+                    commentInput.id = 'commentInput';
+                    commentInput.placeholder = '댓글 달기...';
+                    const submitButton = document.createElement('button');
+                    submitButton.id = 'submitComment';
+                    submitButton.textContent = '게시';
+
+                    commentForm.appendChild(commentInput);
+                    commentForm.appendChild(submitButton);
+
+                    // 기존 댓글들을 표시할 요소
+                    const allCommentsDiv = document.createElement('div');
+                    allCommentsDiv.id = 'all_comments';
+
+                    // 댓글 모달창에 요소 추가
+                    commentContainer.appendChild(imgDiv);
+                    commentContainer.appendChild(postContentDiv);
+                    commentContainer.appendChild(commentForm);
+                    commentContainer.appendChild(allCommentsDiv);
+
+                    // 댓글을 불러와서 표시
+                    await updateCommentList(postId);
+
+                    // 댓글 입력 버튼에 이벤트 리스너 추가
+                    document.getElementById('submitComment').addEventListener('click', function () {
+                        submitComment(postId);
+                    });
+
+                    // 모달창을 화면에 표시
+                    commentModal.style.display = 'block';
+                } else {
+                    console.error('Post document not found.');
+                }
+            } catch (error) {
+                console.error('Error opening comment modal:', error);
             }
         }
 
-        async function loadComments(postId) {
-            const db = firebase.firestore();
-            const commentsRef = db.collection('comments').doc(postId).collection('comment_messages');
-            const snapshot = await commentsRef.get();
-            const comments = snapshot.docs.map(doc => doc.data());
+
+
+        async function getComments(postId) {
+            const commentCollectionRef = collection(db, 'comment', postId, 'message');
+
+            const querySnapshot = await getDocs(commentCollectionRef);
+
+            const comments = [];
+            querySnapshot.forEach(doc => {
+                const commentData = doc.data();
+                comments.push({
+                    id: doc.id,
+                    content: commentData.content,
+                    name: commentData.name,
+                    uid: commentData.uid,
+                    profilePicture: commentData.profilePicture,
+                    timestamp: commentData.timestamp.toMillis(),
+                });
+            });
+
+            // 시간순으로 댓글을 정렬
+            comments.sort((a, b) => b.timestamp - a.timestamp);
+
             return comments;
         }
 
 
+        async function submitComment(postId) {
+            const commentInput = document.getElementById('commentInput');
+            const commentText = commentInput.value.trim();
 
-        async function addComment(postId, content, name) {
-            const db = firebase.firestore();
-            const commentRef = db.collection('comments').doc(postId).collection('comment_messages').doc();
-            await commentRef.set({
-                content: content,
-                name: name
-            });
+            if (commentText) {
+                const auth = getAuth();
+                const user = auth.currentUser;
+                const uid = user.uid;
+
+                const userDocRef = doc(db, 'user', uid);
+                const userDocSnap = await getDoc(userDocRef);
+
+                if (userDocSnap.exists()) {
+                    const userData = userDocSnap.data();
+
+                    const userName = userData.name;
+                    const userprofile = userData.profilePicture;
+
+                    const postDocRef = doc(db, 'comment', postId);
+                    const messageCollectionRef = collection(postDocRef, 'message');
+
+                    await addDoc(messageCollectionRef, {
+                        content: commentText,
+                        name: userName,
+                        uid: uid,
+                        profilePicture: userprofile,
+                        timestamp: serverTimestamp(),
+                    });
+
+                    commentInput.value = '';
+
+                    updateCommentList(postId);
+                } else {
+                    console.error('User document does not exist.');
+                }
+            }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -538,7 +670,6 @@
                 executeSearch(searchTerm);
             });
 
-            // Perform search when the user presses Enter in the search input
             searchInput.addEventListener('keydown', function (event) {
                 if (event.key === 'Enter') {
                     const searchTerm = searchInput.value.trim();
@@ -549,30 +680,31 @@
             });
         });
 
-        // searchResultsContainer.innerHTML = ''    
-
         async function executeSearch(searchTerm) {
             const searchResultsContainer = document.getElementById('searchResults');
 
             try {
-                const tagQuerySnapshot = await db1.collection('tags')
-                    .doc(searchTerm)
-                    .get();
+                const tagDocRef = db1.collection('tags').doc(searchTerm);
+                const tagDoc = await tagDocRef.get();
 
-                if (tagQuerySnapshot.exists) {
-                    const postsArray = tagQuerySnapshot.data().posts;
+                if (tagDoc.exists) {
+                    const postsArray = tagDoc.data().posts || [];
 
                     searchResultsContainer.innerHTML = '<p>검색 결과:</p>';
-                    searchResultsContainer.innerHTML = ''
+                    searchResultsContainer.innerHTML = '';
 
                     for (const postId of postsArray) {
                         try {
                             const postDoc = await db1.collection('posts').doc(postId).get();
-                            const postData = postDoc.data();
-
-                            const postCard = await createPostCard(postData);
-
-                            searchResultsContainer.appendChild(postCard);
+                            if (!postDoc.exists) {
+                                await tagDocRef.update({
+                                    posts: firebase.firestore.FieldValue.arrayRemove(postId)
+                                });
+                            } else {
+                                const postData = postDoc.data();
+                                const postCard = await createPostCard(postData);
+                                searchResultsContainer.appendChild(postCard);
+                            }
                         } catch (error) {
                             console.error('Error fetching post data:', error);
                         }
@@ -586,12 +718,10 @@
             }
         }
 
+
+
         async function editPost() {
             console.log('게시물 수정하기');
-        }
-
-        async function deletePost() {
-            console.log('게시물 삭제하기');
         }
 
         async function reportPost() {
@@ -638,12 +768,61 @@
             return commentForm;
         }
 
-        // 모달 창 열기 함수
-        async function openModal() {
-            // 모달 엘리먼트 선택
-            const modal = document.getElementById('myModal'); // 모달 창의 실제 ID에 따라 수정이 필요
+        async function deletePost(postId) {
+            try {
+                const user = getAuth().currentUser;
+                if (user) {
+                    const uid = user.uid;
+                    const userDocRef = doc(db, 'user', uid);
+                    const userDocSnap = await getDoc(userDocRef);
 
-            // 모달 창 보이도록 설정
+                    if (userDocSnap.exists()) {
+                        const userData = userDocSnap.data();
+                        const role = userData.role;
+
+                        if (role === "관리자" || userData.likePost.includes(postId)) {
+                            const postDocRef = doc(db, 'posts', postId);
+                            const postDocSnap = await getDoc(postDocRef);
+
+                            if (postDocSnap.exists()) {
+                                await deleteDoc(postDocRef);
+                                closeModal();
+                                window.location.href = "./home.html";
+                            } else {
+                                console.error('게시물 문서를 찾을 수 없습니다.');
+                            }
+                        } else {
+                            console.error('권한이 없습니다.');
+                        }
+                    } else {
+                        console.error('사용자 문서를 찾을 수 없습니다.');
+                    }
+                } else {
+                    console.error('로그인되지 않았습니다.');
+                }
+            } catch (error) {
+                console.error('게시물 삭제 중 오류가 발생했습니다:', error);
+            }
+
+            const modalchat = document.getElementById("myModal");
+            modalchat.style.display = "block";
+        }
+
+
+
+
+
+
+
+
+
+        // 모달 창 열기 함수
+        async function openModal1(postId) {
+            document.getElementById('deletePost').addEventListener('click', function () {
+                const aa = postId.id;
+                deletePost(aa)
+            });
+            const modal = document.getElementById('myModal');
             modal.style.display = 'block';
         }
 
@@ -743,7 +922,6 @@
                         var postImage = postImages[i];
 
                         if (postImage && postTitle && postContent) {
-                            // 이미지 파일을 Firebase Storage에 업로드
                             var storageRef = firebase.storage().ref('post_images/' + postImage.name);
                             var uploadTask = storageRef.put(postImage);
 
@@ -763,6 +941,12 @@
                                     userName: userName,
                                     likeCount: 0,
                                     likedBy: []
+                                });
+
+                                const postId = postDocRef.id;
+
+                                await db.collection('posts').doc(postId).update({
+                                    id: postId
                                 });
 
                                 // 태그 관련 처리
@@ -808,12 +992,7 @@
                 console.error('User is not authenticated or Firestore is not available');
             }
         }
-
-
-
         var boardImage;
-
-
 
         async function createPostCard(postData) {
             let boardImage = document.createElement('img');
@@ -822,7 +1001,8 @@
             boardImage.className = 'board-image';
 
             boardImage.addEventListener('click', function () {
-                openModal();
+                const postId = postData;
+                openModal1(postId);
             });
 
             const allPostCard = document.createElement('div');
@@ -844,17 +1024,31 @@
             allInteractionContainer.className = 'interaction-container';
 
             const allLikeCommentIcons = document.createElement('div');
-            allLikeCommentIcons.className = 'like-comment-icons';
+            allLikeCommentIcons.className = 'like-icon';
+
+
 
             const allLikeIcon = document.createElement('img');
-            allLikeIcon.src = likeIconSrc;
             allLikeIcon.alt = 'Like';
             allLikeIcon.className = 'like-comment-icon';
-            allLikeIcon.addEventListener('click', function () {
-                const docId = postData.id;
 
-                toggleLike(docId);
+            // 현재 로그인 중인 사용자의 UID를 찾습니다.
+            const userId = auth.currentUser ? auth.currentUser.uid : null;
+
+            if (postData.likedBy.includes(userId)) {
+                allLikeIcon.src = '../image/heart-yes.png';
+                allLikeIcon.classList.add('liked');
+            } else {
+                allLikeIcon.src = '../image/heart-no.png';
+            }
+
+            // 좋아요 아이콘에 클릭 이벤트 리스너를 추가
+            allLikeIcon.addEventListener('click', function () {
+                const postId = postData.id;
+                toggleLike(postId);
             });
+
+
 
             const allCommentIcon = document.createElement('img');
             allCommentIcon.src = '../image/message.png';
@@ -864,7 +1058,6 @@
             allCommentIcon.addEventListener('click', function () {
                 const postId = postData.id;
                 openCommentModal(postId);
-                // 댓글
             });
 
             const allLikeCommentCount = document.createElement('div');
@@ -897,9 +1090,7 @@
         // 게시물 목록 업데이트 함수
         async function updatePostList() {
             const postListElement = document.getElementById('post-list');
-
             const collectionRef = db1.collection('posts');
-
             postListElement.innerHTML = '';
 
             try {
@@ -908,6 +1099,26 @@
 
                 for (const doc of querySnapshot.docs) {
                     const postData = doc.data();
+                    postData.id = doc.id; // 게시물 ID를 데이터에 추가합니다.
+
+                    // 각 게시물의 좋아요 상태를 확인하고 업데이트합니다.
+                    const userId = auth.currentUser ? auth.currentUser.uid : null;
+                    const allLikeIcon = document.createElement('img');
+                    allLikeIcon.alt = 'Like';
+                    allLikeIcon.className = 'like-comment-icon';
+
+                    if (userId && postData.likedBy && postData.likedBy.includes(userId)) {
+                        allLikeIcon.src = '../image/heart-yes.png';
+                        allLikeIcon.classList.add('liked');
+                    } else {
+                        allLikeIcon.src = '../image/heart-no.png';
+                    }
+
+                    // 좋아요 아이콘에 클릭 이벤트 리스너를 추가
+                    allLikeIcon.addEventListener('click', function () {
+                        const postId = postData.id;
+                        toggleLike(postId);
+                    });
 
                     topLikedPosts.push({
                         id: doc.id,
@@ -915,6 +1126,7 @@
                         data: postData
                     });
 
+                    // 게시물 카드를 생성하고 목록에 추가합니다.
                     const postCard = await createPostCard(postData);
                     postListElement.appendChild(postCard);
                 }
@@ -951,6 +1163,7 @@
             likeButtonEnabled = false;
 
             const postRef1 = db1.collection('posts').doc(postId);
+            const userRef = db1.collection('user').doc(auth.currentUser.uid);
 
             try {
                 const doc = await postRef1.get();
@@ -959,8 +1172,12 @@
                     const postData = doc.data();
                     let likedBy = postData.likedBy || [];
 
+                    await postRef1.update({
+                        likedBy: likedBy,
+                        likeCount: postData.likeCount
+                    });
+
                     if (likedBy.includes(auth.currentUser.uid)) {
-                        // 이미 누른 경우, 좋아요 취소
                         likedBy = likedBy.filter(uid => uid !== auth.currentUser.uid);
                         postData.likeCount -= 1;
                     } else {
@@ -972,6 +1189,21 @@
                         likedBy: likedBy,
                         likeCount: postData.likeCount
                     });
+
+                    const userDoc = await userRef.get();
+                    let likePost = userDoc.exists ? userDoc.data().likePost || [] : [];
+
+                    if (likedBy.includes(auth.currentUser.uid)) {
+                        if (!likePost.includes(postId)) {
+                            likePost.push(postId);
+                        }
+                    } else {
+                        likePost = likePost.filter(id => id !== postId);
+                    }
+
+                    await userRef.set({
+                        likePost: likePost
+                    }, { merge: true });
 
                     updatePostList();
                 } else {
@@ -1006,11 +1238,9 @@
                     const userDocSnap = await getDoc(userDocRef);
 
                     if (userDocSnap.exists()) {
-                        // 사용자 정보가 존재할 때 프로필 사진과 이름 가져오기
                         const profilePicture = userDocSnap.data().profilePicture;
                         const name = userDocSnap.data().name;
 
-                        // Firestore에 메시지 추가
                         await addDoc(collection(db, 'chat', 'messages', 'contents'), {
                             content: message,
                             timestamp: serverTimestamp(),
@@ -1048,32 +1278,22 @@
             querySnapshot.forEach((doc) => {
                 const messageData = doc.data();
 
-                // 채팅 내용을 감싸는 div 생성
                 const messageElement = document.createElement('div');
                 messageElement.className = (messageData.uid === auth.currentUser.uid) ? 'own-message' : 'other-message';
 
-                // 이름 엘리먼트 생성 및 설정
                 const nameElement = document.createElement('p');
                 nameElement.textContent = messageData.name;
                 nameElement.className = 'chat-user-name';
 
-                // 채팅 내용 엘리먼트 생성 및 설정
                 const contentElement = document.createElement('p');
                 contentElement.textContent = messageData.content;
-
-                // 각 엘리먼트를 메시지 엘리먼트에 추가
                 messageElement.appendChild(nameElement);
                 messageElement.appendChild(contentElement);
-
-                // 채팅 메시지를 채팅 메시지 컨테이너에 추가
                 chatMessages.appendChild(messageElement);
             });
 
             scrollToBottom();
         });
-
-
-
 
         onAuthStateChanged(auth, (user) => {
             const loginStatusLink = document.getElementById("login-status");
