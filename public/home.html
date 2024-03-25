@@ -496,7 +496,8 @@
                 const imgDiv = document.createElement('div');
                 imgDiv.id = 'commant_img';
 
-                const imagePath = `https://firebasestorage.googleapis.com/v0/b/html-project-50a56.appspot.com/o/profile_images%2F${comment.profilePicture}.png?alt=media&token=03f5c3e7-bc14-4556-a851-0a7e5bb8bc25`;
+                
+                const imagePath = `https://firebasestorage.googleapis.com/v0/b/${firebaseConfig.storageBucket}/o/profile_images%2F${comment.profilePicture}.png?alt=media`
 
                 const profileImage = document.createElement('img');
                 profileImage.src = imagePath;
@@ -867,20 +868,17 @@
                         const role = userData.role;
 
                         if (role === "관리자") {
-                            // If the user is an admin, proceed to delete the post
                             const postDocRef = doc(db, 'posts', postId);
                             await deleteDoc(postDocRef);
                             closeModal();
                             window.location.href = "./home.html";
                         } else {
-                            // If the user is not an admin, check if the post's uid matches the current user's uid
                             const postDocRef = doc(db, 'posts', postId);
                             const postDocSnap = await getDoc(postDocRef);
 
                             if (postDocSnap.exists()) {
                                 const postData = postDocSnap.data();
                                 if (postData.uid === uid) {
-                                    // If the uid matches, proceed to delete the post
                                     await deleteDoc(postDocRef);
                                     closeModal();
                                     window.location.href = "./home.html";
@@ -904,13 +902,6 @@
             const modalchat = document.getElementById("myModal");
             modalchat.style.display = "block";
         }
-
-
-
-
-
-
-
 
         async function openModal1(postId) {
             document.getElementById('deletePost').addEventListener('click', function () {
@@ -1061,6 +1052,12 @@
                                     }
                                 }
 
+                                // 사용자의 uploadpost 숫자를 증가시키는 코드
+                                const userRef = db.collection('user').doc(auth.currentUser.uid);
+                                await userRef.update({
+                                    uploadpost: firebase.firestore.FieldValue.increment(1)
+                                });
+
                                 postTitleInput.value = '';
                                 postContentInput.value = '';
                                 postTagsInput.value = '';
@@ -1116,7 +1113,7 @@
                 const postDocSnap = await getDoc(postDocRef);
                 if (postDocSnap.exists()) {
                     const postData = postDocSnap.data();
-                    postData.id = postDocSnap.id; // Add the post ID to the post data
+                    postData.id = postDocSnap.id; 
                     const postCard = await createPostCard(postData);
                     likedPostsContainer.appendChild(postCard);
                 }
@@ -1131,16 +1128,6 @@
                 await displayLikedPosts(user.uid);
             }
         });
-
-        
-
-
-
-
-
-
-
-
 
         async function createPostCard(postData) {
             let boardImage = document.createElement('img');
@@ -1401,14 +1388,14 @@
                         }
                     } else {
                         console.error("Firestore에서 사용자 정보를 찾을 수 없습니다.");
-                        this.disabled = false; 
+                        this.disabled = false;
                     }
                 } else {
                     location.href = "./system.html";
-                    this.disabled = false; 
+                    this.disabled = false;
                 }
             } else {
-                this.disabled = false; 
+                this.disabled = false;
             }
         });
 
@@ -1451,14 +1438,14 @@
                             }
                         } else {
                             console.error("Firestore에서 사용자 정보를 찾을 수 없습니다.");
-                            sendButton.disabled = false; 
+                            sendButton.disabled = false;
                         }
                     } else {
                         location.href = "./system.html";
                         sendButton.disabled = false;
                     }
                 } else {
-                    sendButton.disabled = false; 
+                    sendButton.disabled = false;
                 }
             }
         });
@@ -1467,29 +1454,41 @@
         const chatCollectionRef = collection(db, 'chat', 'messages', 'contents');
         const orderedQuery = query(chatCollectionRef, orderBy('timestamp', 'asc'));
 
-        onSnapshot(orderedQuery, (querySnapshot) => {
-            const chatMessages = document.getElementById('chat-messages');
-            chatMessages.innerHTML = '';
+        onSnapshot(orderedQuery, async (querySnapshot) => {
+    const chatMessages = document.getElementById('chat-messages');
+    chatMessages.innerHTML = '';
 
-            querySnapshot.forEach((doc) => {
-                const messageData = doc.data();
+    for (const doc of querySnapshot.docs) {
+        const messageData = doc.data();
 
-                const messageElement = document.createElement('div');
-                messageElement.className = (messageData.uid === auth.currentUser.uid) ? 'own-message' : 'other-message';
+        const messageElement = document.createElement('div');
+        messageElement.className = (messageData.uid === auth.currentUser.uid) ? 'own-message' : 'other-message';
 
-                const nameElement = document.createElement('p');
-                nameElement.textContent = messageData.name;
-                nameElement.className = 'chat-user-name';
+        const nameElement = document.createElement('p');
+        nameElement.textContent = messageData.name;
+        nameElement.className = 'chat-user-name';
 
-                const contentElement = document.createElement('p');
-                contentElement.textContent = messageData.content;
-                messageElement.appendChild(nameElement);
-                messageElement.appendChild(contentElement);
-                chatMessages.appendChild(messageElement);
-            });
+        const contentElement = document.createElement('p');
+        contentElement.textContent = messageData.content;
 
-            scrollToBottom();
-        });
+        // 로그인 중인 사용자의 UID와 채팅 데이터의 UID가 일치하지 않는 경우에만 프로필 사진을 불러옵니다.
+        if (messageData.uid !== auth.currentUser.uid) {
+            const profilePictureRef = firebase.storage().ref(`profile_images/${messageData.profilePicture}.png`);
+            const profilePictureURL = await profilePictureRef.getDownloadURL();
+
+            const profilePictureElement = document.createElement('img');
+            profilePictureElement.src = profilePictureURL;
+            profilePictureElement.className = 'chat-profile-picture';
+            messageElement.appendChild(profilePictureElement);
+        }
+
+        messageElement.appendChild(nameElement);
+        messageElement.appendChild(contentElement);
+        chatMessages.appendChild(messageElement);
+    }
+
+    scrollToBottom();
+});
 
         onAuthStateChanged(auth, (user) => {
             const loginStatusLink = document.getElementById("login-status");
