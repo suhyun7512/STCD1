@@ -584,3 +584,15 @@ nav.retro .underline:nth-child(2) {
 nav.retro .underline:nth-child(3) {
     background: tomato;
 }
+
+
+
+#addPostButton{
+    padding: 5px 8px;
+    border: 0px solid;
+    background-color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    transition: 0.2s;
+    cursor:pointer;
+}
