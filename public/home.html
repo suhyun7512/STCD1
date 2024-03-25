@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css">
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-</head>
+</head>     
 
 <body style="overflow-y: hidden;">
     <div class="loading-container">
@@ -162,15 +162,41 @@
             <h2>프로필</h2>
 
             <div id="profile-div">
-                <img id="profile-modal-image" alt="Profile Image">
-                <p id="profile-name"></p>
-                <p id="profile-aboutMe"></p>
-                <p id="profile-followers"></p>
-                <p id="profile-following"></p>
+                <div style="display:flex; justify-content: center;  margin-bottom: 20px;">
+                    <img id="profile-modal-image" alt="Profile Image">
+                    <div style="display: flex; margin-left: 20px; flex-direction: column;">
+                        <p style="font-size: 24px; font-weight: bold;" id="profile-name"></p>
+                        <p id="profile-aboutMe"></p>
+                        <p id="profile-UID"></p>
+                    </div>
+                    <i id="profile-setting" class='bx bx-cog'></i>
+                </div>
+                <div
+                    style="display: flex; border-bottom: 2px solid #000; border-top: 2px solid #000; margin: 10px 0; padding: 10px 0; justify-content: space-around;">
+                    <p id="profile-uploadpost"></p>
+                    <p id="profile-followers"></p>
+                    <p id="profile-following"></p>
+                </div>
 
-                <button id="changeNameButton">프로필 이름 변경</button>
-                <button id="changeProfileImageButton">프로필 사진 변경</button>
-                <button id="changeabotmeButton">자기소개 변경</button>
+                <nav class="black">
+                    <div class="underline"></div>
+                    <div class="underline"></div>
+                    <div class="underline"></div>
+                    <a class="icon-click" id="likepostbutton" onclick="ul(0)">
+                        <i style="font-size: 42px;" class='bx bxs-heart-circle'></i>
+                    </a>
+                    <a class="icon-click" id="makepostbutton" onclick="ul(1)">
+                        <i style="font-size: 42px;"  class='bx bx-upload'></i>
+                    </a>
+                </nav>
+
+                <div id="likedPostsContainer"></div>
+
+                <div id="profile-menu" style="display: none;">
+                    <button id="changeNameButton">프로필 이름 변경</button><br>
+                    <button id="changeProfileImageButton">프로필 사진 변경</button><br>
+                    <button id="changeabotmeButton">프로필 소개 변경</button>
+                </div>
             </div>
         </div>
     </div>
@@ -239,6 +265,34 @@
         const likedIconSrc = '../image/heart-yes.png';
 
 
+        document.addEventListener('DOMContentLoaded', function () {
+            const profileUIDElement = document.getElementById('profile-setting');
+            const profileMenuElement = document.getElementById('profile-menu');
+
+            // Function to toggle the display of the profile menu
+            function toggleProfileMenu() {
+                if (profileMenuElement.style.display === 'none') {
+                    profileMenuElement.style.display = 'block';
+                } else {
+                    profileMenuElement.style.display = 'none';
+                }
+            }
+
+            // Event listener for the profile UID element
+            profileUIDElement.addEventListener('click', function (event) {
+                event.stopPropagation(); // Prevent the click event from bubbling up to the document
+                toggleProfileMenu();
+            });
+
+            // Event listener for clicks outside the profile menu
+            document.addEventListener('click', function (event) {
+                if (!profileMenuElement.contains(event.target) && !profileUIDElement.contains(event.target)) {
+                    profileMenuElement.style.display = 'none';
+                }
+            });
+        });
+
+
 
         document.addEventListener('DOMContentLoaded', function () {
             const profileButton = document.getElementById('profile-buttom');
@@ -248,6 +302,7 @@
             const profileImageElement = document.getElementById('profile-modal-image');
             const profileFollowersElement = document.getElementById('profile-followers');
             const profileFollowingElement = document.getElementById('profile-following');
+            const profileupload = document.getElementById('profile-uploadpost');
 
             profileButton.addEventListener('click', async function () {
                 const user = auth.currentUser;
@@ -262,26 +317,32 @@
 
                         const userName = userDoc.data().name;
 
+                        const userupload = userDoc.data().uploadpost;
+
                         const profileNumber = userData.profilePicture;
 
                         const imagePath = `profile_images/${profileNumber}.png`;
                         const profileImageRef = ref(storage, imagePath);
                         const downloadURL = await getDownloadURL(profileImageRef);
 
-                        profileNameElement.textContent = '이름: ' + (userData.displayName || userName);
+                        profileupload.textContent = '게시물: ' + (userData.displayName || userupload);
+
+                        profileNameElement.textContent = (userData.displayName || userName);
                         profileImageElement.src = downloadURL || 'path/to/default/profile/image.jpg';
 
                         const profileaboutMeElement = document.getElementById('profile-aboutMe');
                         const userAboutMe = userDoc.data().aboutme;
-                        profileaboutMeElement.textContent = '자기소개: ' + (userAboutMe || '');
+                        profileaboutMeElement.textContent = (userAboutMe || '');
 
-
+                        const profilUID = document.getElementById('profile-UID');
+                        const userAboutMe1 = userDoc.data().uid;
+                        profilUID.textContent = 'UID: ' + (userAboutMe1 || '');
 
                         const followersSnapshot = await db1.collection('user').where('followuser', 'array-contains', user.uid).get();
                         profileFollowersElement.textContent = `팔로워: ${userData.followuser || 0}`;
 
                         const followingSnapshot = await db1.collection('user').where('likeuser', 'array-contains', user.uid).get();
-                        profileFollowingElement.textContent = '팔로잉: ' + followingSnapshot.size;
+                        profileFollowingElement.textContent = '팔로우: ' + followingSnapshot.size;
 
                         profileModal.style.display = 'block';
 
@@ -384,6 +445,12 @@
                         });
 
 
+
+                        //document.getElementById('changePasswordButton').addEventListener('click', async function () {
+                        //    console.log("test")
+                        //});
+
+
                         profileModal.style.display = 'block';
                     } else {
                         console.error('사용자 데이터를 찾을 수 없습니다.');
@@ -404,21 +471,12 @@
             commentModal.style.display = 'none';
         });
 
-
-
-
-
-
-
-
-
         async function updateCommentList(postId) {
             const comments = await getComments(postId);
             const commentContainer = document.getElementById('commentContainer7');
 
             commentContainer.innerHTML = '';
 
-            // 댓글을 최신순으로 정렬
             comments.sort((a, b) => b.timestamp - a.timestamp);
 
             comments.forEach(comment => {
@@ -462,19 +520,15 @@
                 const commentModal = document.getElementById('commentModal7');
                 const commentContainer = document.getElementById('commentContainer7');
 
-                // postId로 데이터를 찾기 위해 필요한 코드 추가
                 const postDocRef = doc(db, 'posts', postId);
                 const postDocSnap = await getDoc(postDocRef);
                 if (postDocSnap.exists()) {
                     const postData = postDocSnap.data();
-                    // postId로 데이터를 찾아서 이미지 URL, 제목, 작성자 등을 가져옴
                     const imageUrl = postData.imageUrl;
                     const title = postData.title;
                     const userName = postData.userName;
                     const content = postData.content;
 
-                    // 모달창에 데이터를 표시
-                    // 이미지
                     const imgDiv = document.createElement('div');
                     imgDiv.id = 'post_img';
 
@@ -482,7 +536,6 @@
                     image.src = imageUrl;
                     imgDiv.appendChild(image);
 
-                    // 제목, 작성자, 내용
                     const postContentDiv = document.createElement('div');
                     postContentDiv.id = 'post_content';
 
@@ -502,7 +555,6 @@
                     postContentDiv.appendChild(userNameP);
                     postContentDiv.appendChild(contentP);
 
-                    // 댓글 입력 폼 및 버튼
                     const commentForm = document.createElement('div');
                     commentForm.id = 'commentForm';
                     const commentInput = document.createElement('input');
@@ -516,25 +568,20 @@
                     commentForm.appendChild(commentInput);
                     commentForm.appendChild(submitButton);
 
-                    // 기존 댓글들을 표시할 요소
                     const allCommentsDiv = document.createElement('div');
                     allCommentsDiv.id = 'all_comments';
 
-                    // 댓글 모달창에 요소 추가
                     commentContainer.appendChild(imgDiv);
                     commentContainer.appendChild(postContentDiv);
                     commentContainer.appendChild(commentForm);
                     commentContainer.appendChild(allCommentsDiv);
 
-                    // 댓글을 불러와서 표시
                     await updateCommentList(postId);
 
-                    // 댓글 입력 버튼에 이벤트 리스너 추가
                     document.getElementById('submitComment').addEventListener('click', function () {
                         submitComment(postId);
                     });
 
-                    // 모달창을 화면에 표시
                     commentModal.style.display = 'block';
                 } else {
                     console.error('Post document not found.');
@@ -564,7 +611,6 @@
                 });
             });
 
-            // 시간순으로 댓글을 정렬
             comments.sort((a, b) => b.timestamp - a.timestamp);
 
             return comments;
@@ -748,11 +794,9 @@
             console.log('게시물 신고하기');
         }
 
-        // 모달에 댓글 작성 폼 업데이트 함수
         async function updateCommentForm(postId) {
             const modalCommentForm = document.getElementById('modalCommentForm');
 
-            // 댓글 작성 폼을 모달에 표시
             if (modalCommentForm) {
                 modalCommentForm.innerHTML = '';
 
@@ -761,7 +805,6 @@
             }
         }
 
-        // 댓글 작성 폼 생성 함수
         async function createCommentForm(postId) {
             const commentForm = document.createElement('div');
             commentForm.className = 'form-group';
@@ -836,7 +879,6 @@
 
 
 
-        // 모달 창 열기 함수
         async function openModal1(postId) {
             document.getElementById('deletePost').addEventListener('click', function () {
                 const aa = postId.id;
@@ -852,7 +894,6 @@
         }
 
 
-        // 게시물 추가 모달을 열기 위한 함수
         function openAddPostModal() {
             document.getElementById('addPostModal').style.display = 'block';
         }
@@ -865,14 +906,12 @@
             const user = auth.currentUser;
 
             if (user) {
-                // 로그인된 경우 로그아웃 실행
                 auth.signOut().then(async function () {
                     console.log('로그아웃 성공');
                 }).catch(async function (error) {
                     console.error('로그아웃 오류:', error);
                 });
             } else {
-                // 로그아웃된 경우 로그인 페이지로 이동
                 window.location.href = 'login.html';
             }
         }
@@ -888,19 +927,16 @@
         window.onclick = async function (event) {
             const addPostModal = document.getElementById('addPostModal');
             const myModal = document.getElementById('myModal');
-            const postModal = document.getElementById('postModal'); // 추가된 부분
+            const postModal = document.getElementById('postModal');
 
-            // 클릭한 엘리먼트가 addPostModal이고, 모달이 열려있는 상태라면 모달을 닫음
             if (event.target === addPostModal && addPostModal.style.display === 'block') {
                 addPostModal.style.display = 'none';
             }
 
-            // 클릭한 엘리먼트가 myModal이고, 모달이 열려있는 상태라면 모달을 닫음
             if (event.target === myModal && myModal.style.display === 'block') {
                 myModal.style.display = 'none';
             }
 
-            // 추가된 부분: 클릭한 엘리먼트가 postModal이고, 모달이 열려있는 상태라면 모달을 닫음
             if (event.target === postModal && postModal.style.display === 'block') {
                 postModal.style.display = 'none';
             }
@@ -911,7 +947,6 @@
         });
 
 
-        // 게시물 추가 함수
         async function addPost() {
             var postImageInput = document.getElementById('postImage');
             var postTitleInput = document.getElementById('postTitle');
@@ -921,7 +956,7 @@
             var postImages = postImageInput.files;
             var postTitle = postTitleInput.value;
             var postContent = postContentInput.value;
-            var postTags = postTagsInput.value.split(' '); // 태그를 공백을 기준으로 나누어 배열로 저장
+            var postTags = postTagsInput.value.split(' ');
 
             if (!firebase.apps.length) {
                 firebase.initializeApp(firebaseConfig);
@@ -929,13 +964,11 @@
 
             if (auth.currentUser && typeof firebase.firestore === 'function') {
                 const db = firebase.firestore();
-                const tagsCollection = db.collection('tags');  // 태그 컬렉션 참조
+                const tagsCollection = db.collection('tags');
 
                 try {
-                    // 사용자의 UID를 사용하여 Firestore에서 해당 사용자의 문서를 가져옴
                     const userDoc = await db.collection('user').doc(auth.currentUser.uid).get();
 
-                    // 사용자 이름을 가져옴
                     const userName = userDoc.data().name;
 
                     for (var i = 0; i < postImages.length; i++) {
@@ -951,7 +984,6 @@
                             }, async function () {
                                 var downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
 
-                                // 게시물 데이터 Firestore에 추가
                                 const postDocRef = await db.collection('posts').add({
                                     imageUrl: downloadURL,
                                     title: postTitle,
@@ -969,38 +1001,30 @@
                                     id: postId
                                 });
 
-                                // 태그 관련 처리
                                 const postTags = postTagsInput.value.split(' ');
 
-                                // 태그 컬렉션 업데이트
                                 for (const tag of postTags) {
                                     const tagDocRef = tagsCollection.doc(tag);
 
-                                    // 해당 태그가 이미 존재하는지 확인
                                     const tagDoc = await tagDocRef.get();
 
                                     if (tagDoc.exists) {
-                                        // 태그가 이미 존재하면 게시물 ID를 추가
                                         await tagDocRef.update({
                                             posts: firebase.firestore.FieldValue.arrayUnion(postDocRef.id)
                                         });
                                     } else {
-                                        // 태그가 존재하지 않으면 새로운 태그 문서 생성
                                         await tagDocRef.set({
                                             posts: [postDocRef.id]
                                         });
                                     }
                                 }
 
-                                // 입력창 초기화
                                 postTitleInput.value = '';
                                 postContentInput.value = '';
                                 postTagsInput.value = '';
 
-                                // 모달 닫기
                                 closeAddPostModal();
 
-                                // 게시물 목록 업데이트
                                 updatePostList();
                             });
                         }
@@ -1013,6 +1037,66 @@
             }
         }
         var boardImage;
+
+
+
+
+
+
+
+
+
+
+
+
+        async function getLikedPostIds(userId) {
+            const userDocRef = doc(db, 'user', userId);
+            const userDocSnap = await getDoc(userDocRef);
+            if (userDocSnap.exists()) {
+                const userData = userDocSnap.data();
+                return userData.likePost || [];
+            } else {
+                console.error('User document does not exist.');
+                return [];
+            }
+        }
+
+        async function displayLikedPosts(userId) {
+            const likedPostIds = await getLikedPostIds(userId);
+            const likedPostsContainer = document.querySelector('#likedPostsContainer');
+
+            likedPostsContainer.innerHTML = '';
+
+            for (const postId of likedPostIds) {
+                const postDocRef = doc(db, 'posts', postId);
+                const postDocSnap = await getDoc(postDocRef);
+                if (postDocSnap.exists()) {
+                    const postData = postDocSnap.data();
+                    postData.id = postDocSnap.id; // Add the post ID to the post data
+                    const postCard = await createPostCard(postData);
+                    likedPostsContainer.appendChild(postCard);
+                }
+            }
+        }
+
+        const profileButton = document.getElementById('profile-buttom');
+
+        profileButton.addEventListener('click', async function () {
+            const user = auth.currentUser;
+            if (user) {
+                await displayLikedPosts(user.uid);
+            }
+        });
+
+        
+
+
+
+
+
+
+
+
 
         async function createPostCard(postData) {
             let boardImage = document.createElement('img');
@@ -1052,7 +1136,6 @@
             allLikeIcon.alt = 'Like';
             allLikeIcon.className = 'like-comment-icon';
 
-            // 현재 로그인 중인 사용자의 UID를 찾습니다.
             const userId = auth.currentUser ? auth.currentUser.uid : null;
 
             if (postData.likedBy.includes(userId)) {
@@ -1062,7 +1145,6 @@
                 allLikeIcon.src = '../image/heart-no.png';
             }
 
-            // 좋아요 아이콘에 클릭 이벤트 리스너를 추가
             allLikeIcon.addEventListener('click', function () {
                 const postId = postData.id;
                 toggleLike(postId);
@@ -1107,7 +1189,6 @@
             return allPostCard;
         }
 
-        // 게시물 목록 업데이트 함수
         async function updatePostList() {
             const postListElement = document.getElementById('post-list');
             const collectionRef = db1.collection('posts');
@@ -1119,9 +1200,8 @@
 
                 for (const doc of querySnapshot.docs) {
                     const postData = doc.data();
-                    postData.id = doc.id; // 게시물 ID를 데이터에 추가합니다.
+                    postData.id = doc.id;
 
-                    // 각 게시물의 좋아요 상태를 확인하고 업데이트합니다.
                     const userId = auth.currentUser ? auth.currentUser.uid : null;
                     const allLikeIcon = document.createElement('img');
                     allLikeIcon.alt = 'Like';
@@ -1134,7 +1214,6 @@
                         allLikeIcon.src = '../image/heart-no.png';
                     }
 
-                    // 좋아요 아이콘에 클릭 이벤트 리스너를 추가
                     allLikeIcon.addEventListener('click', function () {
                         const postId = postData.id;
                         toggleLike(postId);
@@ -1146,7 +1225,6 @@
                         data: postData
                     });
 
-                    // 게시물 카드를 생성하고 목록에 추가합니다.
                     const postCard = await createPostCard(postData);
                     postListElement.appendChild(postCard);
                 }
@@ -1160,7 +1238,6 @@
             const matches = content.match(regex);
 
             if (matches) {
-                // 중복된 해시태그를 제거하고 반환
                 return [...new Set(matches)];
             } else {
                 return [];
@@ -1253,7 +1330,6 @@
                 if (user) {
                     const uid = user.uid;
 
-                    // Firestore에서 사용자 정보 가져오기
                     const userDocRef = doc(db, 'user', uid);
                     const userDocSnap = await getDoc(userDocRef);
 
@@ -1432,6 +1508,19 @@
             displayUserInfo(user);
         });
     </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
     <script>
         setTimeout(() => {
             const loadingContainer = document.querySelector('.loading-container');
@@ -1471,10 +1560,18 @@
             modalchat.style.display = "block";
         }
 
-        // 모달 닫기
         function closeModal() {
             const modalchat = document.getElementById("myModal");
             modalchat.style.display = "none";
+        }
+
+        function ul(index) {
+
+            var underlines = document.querySelectorAll(".underline");
+
+            for (var i = 0; i < underlines.length; i++) {
+                underlines[i].style.transform = 'translate3d(' + index * 100 + '%,0,0)';
+            }
         }
 
     </script>
