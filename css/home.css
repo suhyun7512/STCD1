@@ -69,6 +69,10 @@
     text-align: right;
     background-color: #e1ffc7;
     margin-left: auto;
+    display: flex;
+    flex-direction: column-reverse;
+    flex-wrap: wrap;
+    align-content: flex-end;
 }
 
 .other-message {
