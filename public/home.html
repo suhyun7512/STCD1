@@ -496,7 +496,7 @@
                 const imgDiv = document.createElement('div');
                 imgDiv.id = 'commant_img';
 
-                
+
                 const imagePath = `https://firebasestorage.googleapis.com/v0/b/${firebaseConfig.storageBucket}/o/profile_images%2F${comment.profilePicture}.png?alt=media`
 
                 const profileImage = document.createElement('img');
@@ -1113,7 +1113,7 @@
                 const postDocSnap = await getDoc(postDocRef);
                 if (postDocSnap.exists()) {
                     const postData = postDocSnap.data();
-                    postData.id = postDocSnap.id; 
+                    postData.id = postDocSnap.id;
                     const postCard = await createPostCard(postData);
                     likedPostsContainer.appendChild(postCard);
                 }
@@ -1346,149 +1346,244 @@
 
         updatePostList();
 
+        // 채팅 메시지를 추가하는 함수
+        const addChatMessage = (messageData) => {
+            const chatMessages = document.getElementById('chat-messages');
+
+            const messageElement = document.createElement('div');
+            messageElement.className = (messageData.uid === auth.currentUser.uid) ? 'own-message' : 'other-message';
+
+            // 프로필 사진 요소를 먼저 추가합니다.
+            if (messageData.uid !== auth.currentUser.uid) {
+                const profilePictureRef = firebase.storage().ref(`profile_images/${messageData.profilePicture}.png`);
+                profilePictureRef.getDownloadURL().then(profilePictureURL => {
+                    const profilePictureElement = document.createElement('img');
+                    profilePictureElement.src = profilePictureURL;
+                    profilePictureElement.className = 'chat-profile-picture';
+                    messageElement.appendChild(profilePictureElement);
+                });
+            }
+
+            const contentElement = document.createElement('span');
+            contentElement.textContent = messageData.content;
+            messageElement.appendChild(contentElement);
+
+            const nameElement = document.createElement('span');
+            nameElement.textContent = messageData.name;
+            nameElement.className = 'chat-user-name';
+            messageElement.appendChild(nameElement);
+
+            chatMessages.appendChild(messageElement);
+            scrollToBottom(); 
+        };
+
+        // 채팅 메시지 목록을 가장 아래로 스크롤하는 함수
         const scrollToBottom = () => {
             const chatContainer = document.getElementById('chat-messages');
             chatContainer.scrollTop = chatContainer.scrollHeight;
         };
 
-        document.getElementById('send-button').addEventListener('click', async () => {
-            this.disabled = true;
+        // 채팅 메시지를 타임 순서대로 로딩하는 함수
+        const loadChatMessages = () => {
+            const chatCollectionRef = collection(db, 'chat', 'messages', 'contents');
+            const orderedQuery = query(chatCollectionRef, orderBy('timestamp', 'asc'));
 
-            const messageInput = document.getElementById('message-input');
-            const message = messageInput.value.trim();
+            onSnapshot(orderedQuery, (querySnapshot) => {
+                querySnapshot.docChanges().forEach((change) => {
+                    if (change.type === 'added') {
+                        const messageData = change.doc.data();
+                        addChatMessage(messageData);
+                    }
+                });
+            });
+        };
 
-            if (message !== '') {
-                const user = auth.currentUser;
+        // 채팅 메시지를 보내는 함수
+        const sendChatMessage = async (message) => {
+            const user = auth.currentUser;
+            if (user) {
+                const uid = user.uid;
+                const userDocRef = doc(db, 'user', uid);
+                const userDocSnap = await getDoc(userDocRef);
 
-                if (user) {
-                    const uid = user.uid;
+                if (userDocSnap.exists()) {
+                    const profilePicture = userDocSnap.data().profilePicture;
+                    const name = userDocSnap.data().name;
 
-                    const userDocRef = doc(db, 'user', uid);
-                    const userDocSnap = await getDoc(userDocRef);
-
-                    if (userDocSnap.exists()) {
-                        const profilePicture = userDocSnap.data().profilePicture;
-                        const name = userDocSnap.data().name;
-
-                        try {
-                            await addDoc(collection(db, 'chat', 'messages', 'contents'), {
-                                content: message,
-                                timestamp: serverTimestamp(),
-                                uid: uid,
-                                profilePicture: profilePicture,
-                                name: name,
-                            });
-
-                            messageInput.value = '';
-                            scrollToBottom();
-                        } catch (error) {
-                            console.error("Error sending message:", error);
-                        } finally {
-                            this.disabled = false;
-                        }
-                    } else {
-                        console.error("Firestore에서 사용자 정보를 찾을 수 없습니다.");
-                        this.disabled = false;
+                    try {
+                        await addDoc(collection(db, 'chat', 'messages', 'contents'), {
+                            content: message,
+                            timestamp: serverTimestamp(),
+                            uid: uid,
+                            profilePicture: profilePicture,
+                            name: name,
+                        });
+                    } catch (error) {
+                        console.error("Error sending message:", error);
                     }
                 } else {
-                    location.href = "./system.html";
-                    this.disabled = false;
+                    console.error("Firestore에서 사용자 정보를 찾을 수 없습니다.");
                 }
             } else {
-                this.disabled = false;
+                location.href = "./system.html";
+            }
+        };
+
+        // 채팅 메시지를 보내는 이벤트 리스너
+        document.getElementById('send-button').addEventListener('click', () => {
+            const messageInput = document.getElementById('message-input');
+            const message = messageInput.value.trim();
+            if (message !== '') {
+                sendChatMessage(message);
+                messageInput.value = '';
             }
         });
 
-        document.getElementById('message-input').addEventListener('keypress', async (event) => {
-            if (event.key === 'Enter') {
-                const sendButton = document.getElementById('send-button');
-                sendButton.disabled = true;
+        // 채팅 메시지를 타임 순서대로 로딩합니다.
+        loadChatMessages();
 
-                const messageInput = document.getElementById('message-input');
-                const message = messageInput.value.trim();
+        // const scrollToBottom = () => {
+        //     const chatContainer = document.getElementById('chat-messages');
+        //     chatContainer.scrollTop = chatContainer.scrollHeight;
+        // };
 
-                if (message !== '') {
-                    const user = auth.currentUser;
+        // document.getElementById('send-button').addEventListener('click', async () => {
+        //     this.disabled = true;
 
-                    if (user) {
-                        const uid = user.uid;
+        //     const messageInput = document.getElementById('message-input');
+        //     const message = messageInput.value.trim();
 
-                        const userDocRef = doc(db, 'user', uid);
-                        const userDocSnap = await getDoc(userDocRef);
+        //     if (message !== '') {
+        //         const user = auth.currentUser;
 
-                        if (userDocSnap.exists()) {
-                            const profilePicture = userDocSnap.data().profilePicture;
-                            const name = userDocSnap.data().name;
+        //         if (user) {
+        //             const uid = user.uid;
 
-                            try {
-                                await addDoc(collection(db, 'chat', 'messages', 'contents'), {
-                                    content: message,
-                                    timestamp: serverTimestamp(),
-                                    uid: uid,
-                                    profilePicture: profilePicture,
-                                    name: name,
-                                });
+        //             const userDocRef = doc(db, 'user', uid);
+        //             const userDocSnap = await getDoc(userDocRef);
 
-                                messageInput.value = '';
-                                scrollToBottom();
-                            } catch (error) {
-                                console.error("Error sending message:", error);
-                            } finally {
-                                sendButton.disabled = false;
-                            }
-                        } else {
-                            console.error("Firestore에서 사용자 정보를 찾을 수 없습니다.");
-                            sendButton.disabled = false;
-                        }
-                    } else {
-                        location.href = "./system.html";
-                        sendButton.disabled = false;
-                    }
-                } else {
-                    sendButton.disabled = false;
-                }
-            }
-        });
+        //             if (userDocSnap.exists()) {
+        //                 const profilePicture = userDocSnap.data().profilePicture;
+        //                 const name = userDocSnap.data().name;
 
-        const chatMessages = document.getElementById('chat-messages');
-        const chatCollectionRef = collection(db, 'chat', 'messages', 'contents');
-        const orderedQuery = query(chatCollectionRef, orderBy('timestamp', 'asc'));
+        //                 try {
+        //                     await addDoc(collection(db, 'chat', 'messages', 'contents'), {
+        //                         content: message,
+        //                         timestamp: serverTimestamp(),
+        //                         uid: uid,
+        //                         profilePicture: profilePicture,
+        //                         name: name,
+        //                     });
 
-        onSnapshot(orderedQuery, async (querySnapshot) => {
-    const chatMessages = document.getElementById('chat-messages');
-    chatMessages.innerHTML = '';
+        //                     messageInput.value = '';
+        //                     scrollToBottom();
+        //                 } catch (error) {
+        //                     console.error("Error sending message:", error);
+        //                 } finally {
+        //                     this.disabled = false;
+        //                 }
+        //             } else {
+        //                 console.error("Firestore에서 사용자 정보를 찾을 수 없습니다.");
+        //                 this.disabled = false;
+        //             }
+        //         } else {
+        //             location.href = "./system.html";
+        //             this.disabled = false;
+        //         }
+        //     } else {
+        //         this.disabled = false;
+        //     }
+        // });
 
-    for (const doc of querySnapshot.docs) {
-        const messageData = doc.data();
+        // document.getElementById('message-input').addEventListener('keypress', async (event) => {
+        //     if (event.key === 'Enter') {
+        //         const sendButton = document.getElementById('send-button');
+        //         sendButton.disabled = true;
 
-        const messageElement = document.createElement('div');
-        messageElement.className = (messageData.uid === auth.currentUser.uid) ? 'own-message' : 'other-message';
+        //         const messageInput = document.getElementById('message-input');
+        //         const message = messageInput.value.trim();
 
-        const nameElement = document.createElement('p');
-        nameElement.textContent = messageData.name;
-        nameElement.className = 'chat-user-name';
+        //         if (message !== '') {
+        //             const user = auth.currentUser;
 
-        const contentElement = document.createElement('p');
-        contentElement.textContent = messageData.content;
+        //             if (user) {
+        //                 const uid = user.uid;
 
-        // 로그인 중인 사용자의 UID와 채팅 데이터의 UID가 일치하지 않는 경우에만 프로필 사진을 불러옵니다.
-        if (messageData.uid !== auth.currentUser.uid) {
-            const profilePictureRef = firebase.storage().ref(`profile_images/${messageData.profilePicture}.png`);
-            const profilePictureURL = await profilePictureRef.getDownloadURL();
+        //                 const userDocRef = doc(db, 'user', uid);
+        //                 const userDocSnap = await getDoc(userDocRef);
 
-            const profilePictureElement = document.createElement('img');
-            profilePictureElement.src = profilePictureURL;
-            profilePictureElement.className = 'chat-profile-picture';
-            messageElement.appendChild(profilePictureElement);
-        }
+        //                 if (userDocSnap.exists()) {
+        //                     const profilePicture = userDocSnap.data().profilePicture;
+        //                     const name = userDocSnap.data().name;
 
-        messageElement.appendChild(nameElement);
-        messageElement.appendChild(contentElement);
-        chatMessages.appendChild(messageElement);
-    }
+        //                     try {
+        //                         await addDoc(collection(db, 'chat', 'messages', 'contents'), {
+        //                             content: message,
+        //                             timestamp: serverTimestamp(),
+        //                             uid: uid,
+        //                             profilePicture: profilePicture,
+        //                             name: name,
+        //                         });
 
-    scrollToBottom();
-});
+        //                         messageInput.value = '';
+        //                         scrollToBottom();
+        //                     } catch (error) {
+        //                         console.error("Error sending message:", error);
+        //                     } finally {
+        //                         sendButton.disabled = false;
+        //                     }
+        //                 } else {
+        //                     console.error("Firestore에서 사용자 정보를 찾을 수 없습니다.");
+        //                     sendButton.disabled = false;
+        //                 }
+        //             } else {
+        //                 location.href = "./system.html";
+        //                 sendButton.disabled = false;
+        //             }
+        //         } else {
+        //             sendButton.disabled = false;
+        //         }
+        //     }
+        // });
+
+        // const chatMessages = document.getElementById('chat-messages');
+        // const chatCollectionRef = collection(db, 'chat', 'messages', 'contents');
+        // const orderedQuery = query(chatCollectionRef, orderBy('timestamp', 'asc'));
+
+        // onSnapshot(orderedQuery, async (querySnapshot) => {
+        //     const chatMessages = document.getElementById('chat-messages');
+        //     chatMessages.innerHTML = '';
+
+        //     for (const doc of querySnapshot.docs) {
+        //         const messageData = doc.data();
+
+        //         const messageElement = document.createElement('div');
+        //         messageElement.className = (messageData.uid === auth.currentUser.uid) ? 'own-message' : 'other-message';
+
+        //         const nameElement = document.createElement('p');
+        //         nameElement.textContent = messageData.name;
+        //         nameElement.className = 'chat-user-name';
+
+        //         const contentElement = document.createElement('p');
+        //         contentElement.textContent = messageData.content;
+
+        //         if (messageData.uid !== auth.currentUser.uid) {
+        //             const profilePictureRef = firebase.storage().ref(`profile_images/${messageData.profilePicture}.png`);
+        //             const profilePictureURL = await profilePictureRef.getDownloadURL();
+
+        //             const profilePictureElement = document.createElement('img');
+        //             profilePictureElement.src = profilePictureURL;
+        //             profilePictureElement.className = 'chat-profile-picture';
+        //             messageElement.appendChild(profilePictureElement);
+        //         }
+
+        //         messageElement.appendChild(nameElement);
+        //         messageElement.appendChild(contentElement);
+        //         chatMessages.appendChild(messageElement);
+        //     }
+
+        //     scrollToBottom();
+        // });
 
         onAuthStateChanged(auth, (user) => {
             const loginStatusLink = document.getElementById("login-status");
