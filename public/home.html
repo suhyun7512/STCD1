@@ -309,6 +309,12 @@
             const profileFollowingElement = document.getElementById('profile-following');
             const profileupload = document.getElementById('profile-uploadpost');
 
+            window.addEventListener('click', function (event) {
+                if (event.target === profileModal) {
+                    profileModal.style.display = 'none';
+                }
+            });
+
             profileButton.addEventListener('click', async function () {
                 const user = auth.currentUser;
                 if (!user) {
