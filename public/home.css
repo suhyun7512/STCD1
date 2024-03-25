@@ -602,3 +602,22 @@ nav.retro .underline:nth-child(3) {
     transition: 0.2s;
     cursor:pointer;
 }
+
+
+.chat-profile-picture{
+    width: 25px;
+    height: 25px;
+    border: 1px solid #000;
+    padding: 0.5px;
+    border-radius: 50%;
+}
+
+.other-message{
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+.chat-user-name{
+    margin-left: 5px;
+}
