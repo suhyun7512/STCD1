@@ -12,8 +12,10 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/1login.css">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha384-x4V5N5cOv7qr+d7l7goUvYEkM6p3nAgtANrCMEyNPTAqHVvZjdtFOpZ5VX8YBgf4" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha384-GLhlTQ8iKu1r7B\6K9i1Kjp5wsZxlF0Qm1P/l9jaL5q6ELQ6kERn9suBPIFIIU\jN6" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha384-x4V5N5cOv7qr+d7l7goUvYEkM6p3nAgtANrCMEyNPTAqHVvZjdtFOpZ5VX8YBgf4" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha384-GLhlTQ8iKu1r7B\6K9i1Kjp5wsZxlF0Qm1P/l9jaL5q6ELQ6kERn9suBPIFIIU\jN6" crossorigin="anonymous">
 
     <script type="module" src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
@@ -23,6 +25,7 @@
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 <!-- style="overflow-x:hidden; overflow-y:hidden" -->
+
 <body style="overflow-x:hidden; overflow-y:hidden">
     <div class="header">
         <a href="./home.html"><img src="../image/stcd_logo_b.png" alt="로고"></a>
@@ -77,7 +80,7 @@
                             <div class="CTA">
                                 <input type="submit" value="회원가입하기" id="submit" class="signup-btn">
                                 <a href="#" class="switch" onclick="document.title = 'STCD-login'">로그인하기</a>
-                                <a class="switch1" href="./Privacy.html">개인정보 정책</a>
+                                <a class="switch1" href="#">개인정보 정책</a>
                             </div>
                         </form>
                     </div>
@@ -125,14 +128,13 @@
     <script>
 
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('.show-password').on('click', function () {
                 var passwordField = $('#loginPassword1');
                 var fieldType = passwordField.attr('type');
 
                 passwordField.attr('type', fieldType === 'password' ? 'text' : 'password');
 
-                // 이미지의 src를 클릭할 때마다 변경
                 var eyeIcon = $(this).find('img');
                 eyeIcon.attr('src', fieldType === 'password' ? '../image/show.png' : '../image/no-show.png');
             });
@@ -143,7 +145,6 @@
 
                 passwordField1.attr('type', fieldType1 === 'password' ? 'text' : 'password');
 
-                // 이미지의 src를 클릭할 때마다 변경
                 var eyeIcon1 = $(this).find('img');
                 eyeIcon1.attr('src', fieldType1 === 'password' ? '../image/show.png' : '../image/no-show.png');
             });
@@ -154,30 +155,20 @@
 
                 passwordField1.attr('type', fieldType1 === 'password' ? 'text' : 'password');
 
-                // 이미지의 src를 클릭할 때마다 변경
                 var eyeIcon1 = $(this).find('img');
                 eyeIcon1.attr('src', fieldType1 === 'password' ? '../image/show.png' : '../image/no-show.png');
             });
         });
 
     </script>
+    <script src="../js/system.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
         import { getFirestore, collection, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
         import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
         import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBn6zoF7c7oj9NIhQ9BXHpn5jP6p_GDa6o",
-            authDomain: "html-project-50a56.firebaseapp.com",
-            databaseURL: "https://html-project-50a56-default-rtdb.firebaseio.com",
-            projectId: "html-project-50a56",
-            storageBucket: "html-project-50a56.appspot.com",
-            messagingSenderId: "327952448390",
-            appId: "1:327952448390:web:4dc6da31402ec9c4d50a07",
-            measurementId: "G-RRNB3WY2S9"
-        };
+        import { sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 
         const app = initializeApp(firebaseConfig);
         const firestore = getFirestore(app);
@@ -188,7 +179,6 @@
                 const passwordField = $('#password');
                 const type = passwordField.attr('type') === 'password' ? 'text' : 'password';
                 passwordField.attr('type', type);
-                // 눈 모양 아이콘 변경
                 $(this).toggleClass('fa-eye fa-eye-slash');
             });
 
@@ -203,13 +193,12 @@
                 var 패스워드 = $('#loginPassword1').val();
 
                 if (!validateEmail(이메일)) {
-                    alert('올바른 이메일 주소를 입력하세요.');
+                    alert('올바른 이메일 주소를 입력하세요.'); 5
                     return;
                 }
 
                 signInWithEmailAndPassword(auth, 이메일, 패스워드)
                     .then((result) => {
-                        console.log(result.user);
                         alert("로그인에 성공하였습니다.");
                         window.location.href = "./home.html";
                     })
@@ -225,14 +214,47 @@
 
                 var email = $('#email').val();
                 var password = $('#password').val();
+                var passwordConfirm = $('#passwordCon').val();
                 var name = $('#name').val();
+
+                // Check if the name is at least 6 characters long
+                if (name.length < 6) {
+                    alert("이름은 6글자 이상이어야 합니다.");
+                    return;
+                }
+
+                // Check if the password and password confirmation match
+                if (password !== passwordConfirm) {
+                    alert("비밀번호가 일치하지 않습니다.");
+                    return;
+                }
+
+                if (!validateEmail(email)) {
+                    alert("올바른 이메일 주소를 입력하세요.");
+                    return;
+                }
 
                 var profilePictureNumber = Math.floor(Math.random() * 5) + 1;
 
                 try {
                     const result = await createUserWithEmailAndPassword(auth, email, password);
 
-                    var userinfo = { name: name, email: email, uid: result.user.uid, role: "일반인", profilePicture: profilePictureNumber };
+                    // Send a verification email to the user
+                    await sendEmailVerification(result.user);
+
+                    var userinfo = {
+                        name: name,
+                        email: email,
+                        uid: result.user.uid,
+                        role: "일반인",
+                        profilePicture: profilePictureNumber,
+                        followuser: 0,
+                        likeuser: 0,
+                        aboutme: "안녕하세요",
+                        password: password,
+                        uploadpost: 0
+                    };
+
                     await setDoc(doc(collection(firestore, 'user'), result.user.uid), userinfo);
 
                     alert("회원가입에 성공하셨습니다.");
@@ -251,6 +273,7 @@
                     }
                 }
             });
+
         });
     </script>
 </body>
