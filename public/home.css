@@ -615,7 +615,8 @@ nav.retro .underline:nth-child(3) {
 .other-message{
     display: flex;
     flex-wrap: nowrap;
-    align-items: center;
+    align-items: flex-start;
+    flex-direction: column-reverse;
 }
 
 .chat-user-name{
