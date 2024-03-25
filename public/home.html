@@ -201,7 +201,11 @@
         </div>
     </div>
 
-
+    <div id="loadingOverlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.8); z-index: 10;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <p>로딩 중...</p>
+        </div>
+    </div>
 
 
 
@@ -843,19 +847,30 @@
                         const userData = userDocSnap.data();
                         const role = userData.role;
 
-                        if (role === "관리자" || userData.likePost.includes(postId)) {
+                        if (role === "관리자") {
+                            // If the user is an admin, proceed to delete the post
+                            const postDocRef = doc(db, 'posts', postId);
+                            await deleteDoc(postDocRef);
+                            closeModal();
+                            window.location.href = "./home.html";
+                        } else {
+                            // If the user is not an admin, check if the post's uid matches the current user's uid
                             const postDocRef = doc(db, 'posts', postId);
                             const postDocSnap = await getDoc(postDocRef);
 
                             if (postDocSnap.exists()) {
-                                await deleteDoc(postDocRef);
-                                closeModal();
-                                window.location.href = "./home.html";
+                                const postData = postDocSnap.data();
+                                if (postData.uid === uid) {
+                                    // If the uid matches, proceed to delete the post
+                                    await deleteDoc(postDocRef);
+                                    closeModal();
+                                    window.location.href = "./home.html";
+                                } else {
+                                    console.error('권한이 없습니다.');
+                                }
                             } else {
                                 console.error('게시물 문서를 찾을 수 없습니다.');
                             }
-                        } else {
-                            console.error('권한이 없습니다.');
                         }
                     } else {
                         console.error('사용자 문서를 찾을 수 없습니다.');
@@ -870,7 +885,6 @@
             const modalchat = document.getElementById("myModal");
             modalchat.style.display = "block";
         }
-
 
 
 
@@ -958,6 +972,8 @@
             var postContent = postContentInput.value;
             var postTags = postTagsInput.value.split(' ');
 
+            document.getElementById('loadingOverlay').style.display = 'block';
+
             if (!firebase.apps.length) {
                 firebase.initializeApp(firebaseConfig);
             }
@@ -1024,6 +1040,8 @@
                                 postTagsInput.value = '';
 
                                 closeAddPostModal();
+
+                                document.getElementById('loadingOverlay').style.display = 'none';
 
                                 updatePostList();
                             });
