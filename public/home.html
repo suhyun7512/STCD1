@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css">
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-</head>     
+</head>
 
 <body style="overflow-y: hidden;">
     <div class="loading-container">
@@ -186,7 +186,7 @@
                         <i style="font-size: 42px;" class='bx bxs-heart-circle'></i>
                     </a>
                     <a class="icon-click" id="makepostbutton" onclick="ul(1)">
-                        <i style="font-size: 42px;"  class='bx bx-upload'></i>
+                        <i style="font-size: 42px;" class='bx bx-upload'></i>
                     </a>
                 </nav>
 
@@ -201,7 +201,8 @@
         </div>
     </div>
 
-    <div id="loadingOverlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.8); z-index: 10;">
+    <div id="loadingOverlay"
+        style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.8); z-index: 10;">
         <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
             <p>로딩 중...</p>
         </div>
@@ -583,7 +584,19 @@
                     await updateCommentList(postId);
 
                     document.getElementById('submitComment').addEventListener('click', function () {
-                        submitComment(postId);
+                        this.disabled = true;
+                        submitComment(postId).then(() => {
+                            this.disabled = false;
+                        }).catch((error) => {
+                            console.error('Error submitting comment:', error);
+                            this.disabled = false;
+                        });
+                    });
+
+                    document.getElementById('commentInput').addEventListener('keypress', (event) => {
+                        if (event.key === 'Enter') {
+                            document.getElementById('submitComment').click();
+                        }
                     });
 
                     commentModal.style.display = 'block';
@@ -957,7 +970,14 @@
         };
 
         document.getElementById('addPostButton').addEventListener('click', function () {
-            addPost();
+            this.disabled = true;
+
+            addPost().then(() => {
+                this.disabled = false;
+            }).catch((error) => {
+                console.error('Error adding post:', error);
+                this.disabled = false;
+            });
         });
 
 
@@ -1339,6 +1359,8 @@
         };
 
         document.getElementById('send-button').addEventListener('click', async () => {
+            this.disabled = true;
+
             const messageInput = document.getElementById('message-input');
             const message = messageInput.value.trim();
 
@@ -1355,29 +1377,83 @@
                         const profilePicture = userDocSnap.data().profilePicture;
                         const name = userDocSnap.data().name;
 
-                        await addDoc(collection(db, 'chat', 'messages', 'contents'), {
-                            content: message,
-                            timestamp: serverTimestamp(),
-                            uid: uid,
-                            profilePicture: profilePicture,
-                            name: name,
-                        });
+                        try {
+                            await addDoc(collection(db, 'chat', 'messages', 'contents'), {
+                                content: message,
+                                timestamp: serverTimestamp(),
+                                uid: uid,
+                                profilePicture: profilePicture,
+                                name: name,
+                            });
 
-                        messageInput.value = '';
-
-                        scrollToBottom();
+                            messageInput.value = '';
+                            scrollToBottom();
+                        } catch (error) {
+                            console.error("Error sending message:", error);
+                        } finally {
+                            this.disabled = false;
+                        }
                     } else {
                         console.error("Firestore에서 사용자 정보를 찾을 수 없습니다.");
+                        this.disabled = false; 
                     }
                 } else {
                     location.href = "./system.html";
+                    this.disabled = false; 
                 }
+            } else {
+                this.disabled = false; 
             }
         });
 
-        document.getElementById('message-input').addEventListener('keypress', (event) => {
+        document.getElementById('message-input').addEventListener('keypress', async (event) => {
             if (event.key === 'Enter') {
-                document.getElementById('send-button').click();
+                const sendButton = document.getElementById('send-button');
+                sendButton.disabled = true;
+
+                const messageInput = document.getElementById('message-input');
+                const message = messageInput.value.trim();
+
+                if (message !== '') {
+                    const user = auth.currentUser;
+
+                    if (user) {
+                        const uid = user.uid;
+
+                        const userDocRef = doc(db, 'user', uid);
+                        const userDocSnap = await getDoc(userDocRef);
+
+                        if (userDocSnap.exists()) {
+                            const profilePicture = userDocSnap.data().profilePicture;
+                            const name = userDocSnap.data().name;
+
+                            try {
+                                await addDoc(collection(db, 'chat', 'messages', 'contents'), {
+                                    content: message,
+                                    timestamp: serverTimestamp(),
+                                    uid: uid,
+                                    profilePicture: profilePicture,
+                                    name: name,
+                                });
+
+                                messageInput.value = '';
+                                scrollToBottom();
+                            } catch (error) {
+                                console.error("Error sending message:", error);
+                            } finally {
+                                sendButton.disabled = false;
+                            }
+                        } else {
+                            console.error("Firestore에서 사용자 정보를 찾을 수 없습니다.");
+                            sendButton.disabled = false; 
+                        }
+                    } else {
+                        location.href = "./system.html";
+                        sendButton.disabled = false;
+                    }
+                } else {
+                    sendButton.disabled = false; 
+                }
             }
         });
 
@@ -1591,7 +1667,6 @@
                 underlines[i].style.transform = 'translate3d(' + index * 100 + '%,0,0)';
             }
         }
-
     </script>
 </body>
 
