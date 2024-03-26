@@ -115,7 +115,8 @@
                 <label for="postImage" class="custom-file-label">
                     <img src="../image/upload.png" alt="Select Image">
                 </label>
-                <input type="file" id="postImage" name="postImage" accept="image/*" multiple required>
+                <input type="file" id="postImage" name="postImage" accept="image/*" multiple="" required="">
+                <div id="imagePreview"></div>
             </div>
             <div class="form-group">
                 <label for="postTitle">제목:</label>
@@ -357,7 +358,15 @@
 
                         profileModal.style.display = 'block';
 
+                        let isChangeNameButtonClickInProgress = false;
+
                         document.getElementById('changeNameButton').addEventListener('click', async function () {
+                            if (isChangeNameButtonClickInProgress) {
+                                return;
+                            }
+
+                            isChangeNameButtonClickInProgress = true;
+
                             let newName = prompt('새로운 이름을 입력하세요.');
 
                             if (newName && newName.length >= 6) {
@@ -386,9 +395,20 @@
                             } else {
                                 console.error('이름은 6글자이어야 합니다.');
                             }
+
+                            isChangeNameButtonClickInProgress = false;
                         });
 
+
+                        let isButtonClickInProgress = false;
+
                         document.getElementById('changeabotmeButton').addEventListener('click', async function () {
+                            if (isButtonClickInProgress) {
+                                return;
+                            }
+
+                            isButtonClickInProgress = true;
+
                             let aboutme = prompt('자기소개를 입력해주세요.');
 
                             if (aboutme && aboutme.length >= 2) {
@@ -416,9 +436,20 @@
                             } else {
                                 console.error('자기소개는 2글자이어야 합니다.');
                             }
+
+                            isButtonClickInProgress = false;
                         });
 
+
+                        let isChangeProfileImageClickInProgress = false;
+
                         document.getElementById('changeProfileImageButton').addEventListener('click', function () {
+                            if (isChangeProfileImageClickInProgress) {
+                                return;
+                            }
+
+                            isChangeProfileImageClickInProgress = true;
+
                             const fileInput = document.createElement('input');
                             fileInput.type = 'file';
                             fileInput.accept = 'image/png';
@@ -453,6 +484,8 @@
                             });
 
                             fileInput.click();
+
+                            isChangeProfileImageClickInProgress = false;
                         });
 
 
@@ -1346,14 +1379,12 @@
 
         updatePostList();
 
-        // 채팅 메시지를 추가하는 함수
         const addChatMessage = (messageData) => {
             const chatMessages = document.getElementById('chat-messages');
 
             const messageElement = document.createElement('div');
             messageElement.className = (messageData.uid === auth.currentUser.uid) ? 'own-message' : 'other-message';
 
-            // 프로필 사진 요소를 먼저 추가합니다.
             if (messageData.uid !== auth.currentUser.uid) {
                 const profilePictureRef = firebase.storage().ref(`profile_images/${messageData.profilePicture}.png`);
                 profilePictureRef.getDownloadURL().then(profilePictureURL => {
@@ -1374,16 +1405,14 @@
             messageElement.appendChild(nameElement);
 
             chatMessages.appendChild(messageElement);
-            scrollToBottom(); 
+            scrollToBottom();
         };
 
-        // 채팅 메시지 목록을 가장 아래로 스크롤하는 함수
         const scrollToBottom = () => {
             const chatContainer = document.getElementById('chat-messages');
             chatContainer.scrollTop = chatContainer.scrollHeight;
         };
 
-        // 채팅 메시지를 타임 순서대로 로딩하는 함수
         const loadChatMessages = () => {
             const chatCollectionRef = collection(db, 'chat', 'messages', 'contents');
             const orderedQuery = query(chatCollectionRef, orderBy('timestamp', 'asc'));
@@ -1398,7 +1427,6 @@
             });
         };
 
-        // 채팅 메시지를 보내는 함수
         const sendChatMessage = async (message) => {
             const user = auth.currentUser;
             if (user) {
@@ -1439,7 +1467,6 @@
             }
         });
 
-        // 채팅 메시지를 타임 순서대로 로딩합니다.
         loadChatMessages();
 
         // const scrollToBottom = () => {
@@ -1767,6 +1794,35 @@
                 underlines[i].style.transform = 'translate3d(' + index * 100 + '%,0,0)';
             }
         }
+
+        const inputElement = document.getElementById('postImage');
+        const imagePreviewElement = document.getElementById('imagePreview');
+
+        inputElement.addEventListener('change', function () {
+            const files = inputElement.files;
+
+            let previewHTML = '';
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    const fileName = file.name.length > 10 ? file.name.substring(0, 10) + '...' : file.name;
+
+                    const imgHTML = `<div>
+                                    <img src="${e.target.result}" alt="File Preview" style="max-width: 100px; max-height: 100px; margin: 5px;" title="${file.name}">
+                                    <p>${fileName}</p>
+                                 </div>`;
+
+                    previewHTML += imgHTML;
+
+                    imagePreviewElement.innerHTML = previewHTML;
+                };
+
+                reader.readAsDataURL(file);
+            }
+        });
     </script>
 </body>
 
