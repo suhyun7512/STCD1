@@ -999,16 +999,52 @@
             }
         };
 
-        document.getElementById('addPostButton').addEventListener('click', function () {
+        document.getElementById('addPostButton').addEventListener('click', async function () {
             this.disabled = true;
 
-            addPost().then(() => {
+            const postTitleInput = document.getElementById('postTitle');
+            const postContentInput = document.getElementById('postContent');
+            const postImageInput = document.getElementById('postImage');
+
+            const postTitle = postTitleInput.value.trim();
+            const postContent = postContentInput.value.trim();
+            const postImages = postImageInput.files;
+
+            if (!postTitle) {
+                const newPostTitle = prompt('게시물 제목을 입력하세요.');
+                if (newPostTitle && newPostTitle.trim() !== '') {
+                    postTitleInput.value = newPostTitle.trim();
+                } else {
+                    this.disabled = false;
+                    return;
+                }
+            }
+
+            if (!postContent) {
+                const newPostContent = prompt('게시물 내용을 입력하세요.');
+                if (newPostContent && newPostContent.trim() !== '') {
+                    postContentInput.value = newPostContent.trim();
+                } else {
+                    this.disabled = false;
+                    return;
+                }
+            }
+
+            if (postImages.length === 0) {
+                alert('이미지를 업로드해야 합니다.');
                 this.disabled = false;
-            }).catch((error) => {
+                return;
+            }
+
+            try {
+                await addPost();
+            } catch (error) {
                 console.error('Error adding post:', error);
+            } finally {
                 this.disabled = false;
-            });
+            }
         });
+
 
 
         async function addPost() {
@@ -1020,7 +1056,7 @@
             var postImages = postImageInput.files;
             var postTitle = postTitleInput.value;
             var postContent = postContentInput.value;
-            var postTags = postTagsInput.value.split(' ');
+            var postTags = postTagsInput.value.trim().split(' ');
 
             document.getElementById('loadingOverlay').style.display = 'block';
 
@@ -1067,25 +1103,26 @@
                                     id: postId
                                 });
 
-                                const postTags = postTagsInput.value.split(' ');
+                                if (postTags.length > 0) {
+                                    for (const tag of postTags) {
+                                        if (tag.trim() !== '') {
+                                            const tagDocRef = tagsCollection.doc(tag);
 
-                                for (const tag of postTags) {
-                                    const tagDocRef = tagsCollection.doc(tag);
+                                            const tagDoc = await tagDocRef.get();
 
-                                    const tagDoc = await tagDocRef.get();
-
-                                    if (tagDoc.exists) {
-                                        await tagDocRef.update({
-                                            posts: firebase.firestore.FieldValue.arrayUnion(postDocRef.id)
-                                        });
-                                    } else {
-                                        await tagDocRef.set({
-                                            posts: [postDocRef.id]
-                                        });
+                                            if (tagDoc.exists) {
+                                                await tagDocRef.update({
+                                                    posts: firebase.firestore.FieldValue.arrayUnion(postDocRef.id)
+                                                });
+                                            } else {
+                                                await tagDocRef.set({
+                                                    posts: [postDocRef.id]
+                                                });
+                                            }
+                                        }
                                     }
                                 }
 
-                                // 사용자의 uploadpost 숫자를 증가시키는 코드
                                 const userRef = db.collection('user').doc(auth.currentUser.uid);
                                 await userRef.update({
                                     uploadpost: firebase.firestore.FieldValue.increment(1)
@@ -1110,6 +1147,7 @@
                 console.error('User is not authenticated or Firestore is not available');
             }
         }
+
         var boardImage;
 
 
